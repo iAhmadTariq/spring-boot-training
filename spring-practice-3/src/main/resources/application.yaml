@@ -1,0 +1,52 @@
+spring:
+  application:
+    name: spring-practice-2
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+
+  boot:
+    admin:
+      client:
+        url: http://localhost:8081
+
+  security:
+    user:
+      name: editor
+      roles: editor
+      password: editor
+
+logging.level:
+  sql: debug
+  liquibase: debug
+  web: debug
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  tracing:
+    sampling:
+      probability: 1.0
+    export:
+      enabled: true
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: http://localhost:4317
+          transport: grpc
+  otlp:
+    metrics:
+      export:
+        enabled: false
+  metrics:
+    tags:
+      application: spring-practice-2
+
+app:
+  name:
+    welcome: "${APP_MESSAGE_WELCOME:${app.message.welcome:Hello!}}"

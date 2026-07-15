@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ClaudeCodeEditorTabs">
+    <option name="activeSessionId" value="ce8b3645-d26c-4b1a-a45e-22cf2147627c" />
+    <option name="openSessionIds">
+      <list>
+        <option value="46770a86-74f5-4cd4-b3e6-5d3a1e08aa29" />
+        <option value="ce8b3645-d26c-4b1a-a45e-22cf2147627c" />
+      </list>
+    </option>
+    <option name="sessionPaths">
+      <map>
+        <entry key="46770a86-74f5-4cd4-b3e6-5d3a1e08aa29" value="/sessions/cfdec8d5-62f8-4475-8b9c-cc4c49a32217" />
+        <entry key="ce8b3645-d26c-4b1a-a45e-22cf2147627c" value="/sessions/cfdec8d5-62f8-4475-8b9c-cc4c49a32217" />
+      </map>
+    </option>
+    <option name="sessionTitles">
+      <map>
+        <entry key="46770a86-74f5-4cd4-b3e6-5d3a1e08aa29" value="I'm building a Spring Boot project and want to add" />
+        <entry key="ce8b3645-d26c-4b1a-a45e-22cf2147627c" value="I'm building a Spring Boot project and want to add" />
+      </map>
+    </option>
+  </component>
+</project>

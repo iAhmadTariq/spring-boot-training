@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ClaudeCodeEditorTabs">
+    <option name="activeSessionId" value="aa1fb636-b6eb-40b3-b650-354c0a16ce48" />
+    <option name="openSessionIds">
+      <list>
+        <option value="46770a86-74f5-4cd4-b3e6-5d3a1e08aa29" />
+        <option value="ce8b3645-d26c-4b1a-a45e-22cf2147627c" />
+        <option value="d9c73bb8-d915-407b-b158-24e492e7bd51" />
+        <option value="aa1fb636-b6eb-40b3-b650-354c0a16ce48" />
+      </list>
+    </option>
+    <option name="sessionPaths">
+      <map>
+        <entry key="46770a86-74f5-4cd4-b3e6-5d3a1e08aa29" value="/sessions/cfdec8d5-62f8-4475-8b9c-cc4c49a32217" />
+        <entry key="aa1fb636-b6eb-40b3-b650-354c0a16ce48" value="/sessions/213ce2bf-ec6c-4084-8f30-ee1e23878b7e" />
+        <entry key="ce8b3645-d26c-4b1a-a45e-22cf2147627c" value="/sessions/cfdec8d5-62f8-4475-8b9c-cc4c49a32217" />
+        <entry key="d9c73bb8-d915-407b-b158-24e492e7bd51" value="/sessions/new" />
+      </map>
+    </option>
+    <option name="sessionTitles">
+      <map>
+        <entry key="46770a86-74f5-4cd4-b3e6-5d3a1e08aa29" value="I'm building a Spring Boot project and want to add" />
+        <entry key="aa1fb636-b6eb-40b3-b650-354c0a16ce48" value="/init" />
+        <entry key="ce8b3645-d26c-4b1a-a45e-22cf2147627c" value="I'm building a Spring Boot project and want to add" />
+        <entry key="d9c73bb8-d915-407b-b158-24e492e7bd51" value="Claude Code" />
+      </map>
+    </option>
+  </component>
+</project>

@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: db.changelog-news-ddl.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: db.changelog-seed-news-data-dml.yaml
+      relativeToChangelogFile: true
