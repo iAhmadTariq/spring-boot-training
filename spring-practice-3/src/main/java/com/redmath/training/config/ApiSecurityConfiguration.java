@@ -3,12 +3,15 @@ package com.redmath.training.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpRequest;
+import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableWebSecurity
@@ -27,7 +30,17 @@ public class ApiSecurityConfiguration {
                 .anyRequest().hasRole("admin"))
                 .formLogin(form-> form.defaultSuccessUrl("/",true))
                 .csrf(config->config.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()));
+                        .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
+                .exceptionHandling(handling -> handling.accessDeniedHandler(accessDeniedHandler()));
         return http.build();
+    }
+
+    private AccessDeniedHandler accessDeniedHandler(){
+        return (request, response, ex) -> {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            String message = ex.getMessage().replace("\\", "\\\\").replace("\"", "\\\"");
+            response.getWriter().write("{\"message\":\"" + message + "\"}");
+        };
     }
 }

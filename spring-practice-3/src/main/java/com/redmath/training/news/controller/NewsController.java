@@ -36,7 +36,7 @@ public class NewsController {
     }
 
     @PostMapping
-    public ResponseEntity<News> create(@RequestHeader(name="X-XSRF-TOKEN",required = false) String csrfToken,  @Valid @RequestBody News news){
+    public ResponseEntity<News> create(@Valid @RequestBody News news){
         News savedNews = newsService.create(news);
         return new ResponseEntity<>(savedNews, HttpStatus.CREATED);
     }

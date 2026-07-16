@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import org.springframework.security.access.AccessDeniedException;
 import java.util.NoSuchElementException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class NewsService {
@@ -47,19 +46,12 @@ public class NewsService {
         News existingNews = newsRepository.findById(newsId)
                 .orElseThrow(() -> new NoSuchElementException("News not found with ID: " + newsId));
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        authorizeOwnerOrEditor(existingNews);
 
-        boolean isOwner = existingNews.getReportedBy().equals(auth.getName());
-        boolean isEditor = hasAnyRole(auth, "ROLE_editor");
+        existingNews.setTitle(news.getTitle());
+        existingNews.setDescription(news.getDescription());
 
-        if (isOwner || isEditor) {
-            existingNews.setTitle(news.getTitle());
-            existingNews.setDescription(news.getDescription());
-
-            return newsRepository.save(existingNews);
-        } else {
-            throw new AccessDeniedException("You do not have permission to update this news article.");
-        }
+        return newsRepository.save(existingNews);
     }
 
     @Transactional
@@ -67,45 +59,40 @@ public class NewsService {
         News existingNews = newsRepository.findById(newsId)
                 .orElseThrow(()-> new NoSuchElementException("News not found with ID: " + newsId));
 
+        authorizeOwnerOrEditor(existingNews);
+
+        if (news.getTitle() != null) {
+            existingNews.setTitle(news.getTitle());
+        }
+        if (news.getDescription() != null) {
+            existingNews.setDescription(news.getDescription());
+        }
+        if (news.getReportedAt() != null) {
+            existingNews.setReportedAt(news.getReportedAt());
+        }
+
+        return newsRepository.save(existingNews);
+    }
+
+    public void delete(Long newsId){
+        News existingNews = newsRepository.findById(newsId)
+                .orElseThrow(() -> new NoSuchElementException("News not found with ID: " + newsId));
+        newsRepository.delete(existingNews);
+    }
+
+    private void authorizeOwnerOrEditor(News existingNews){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
         boolean isOwner = existingNews.getReportedBy().equals(auth.getName());
-        boolean isEditor = hasAnyRole(auth, "ROLE_editor");
+        boolean isEditor = hasRole(auth, "ROLE_editor");
 
-        if(isOwner || isEditor){
-            if (news.getTitle() != null) {
-                existingNews.setTitle(news.getTitle());
-            }
-            if (news.getDescription() != null) {
-                existingNews.setDescription(news.getDescription());
-            }
-            if (news.getReportedBy() != null) {
-                existingNews.setReportedBy(news.getReportedBy());
-            }
-            if (news.getReportedAt() != null) {
-                existingNews.setReportedAt(news.getReportedAt());
-            }
-
-            newsRepository.save(existingNews);
-            return existingNews;
-
-        }else {
+        if (!isOwner && !isEditor) {
             throw new AccessDeniedException("You do not have permission to update this news article.");
         }
     }
 
-    public void delete(Long newsId){
-        newsRepository.deleteById(newsId);
-    }
-
-    private boolean hasAnyRole(Authentication auth, String role){
-        AtomicBoolean result = new AtomicBoolean(false);
-        auth.getAuthorities().forEach(value -> {
-            if(value.getAuthority().equals(role)){
-                result.set(true);
-            }
-        });
-        return result.get();
+    private boolean hasRole(Authentication auth, String role){
+        return auth.getAuthorities().stream()
+                .anyMatch(authority -> authority.getAuthority().equals(role));
     }
 
 }

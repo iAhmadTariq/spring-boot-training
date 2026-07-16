@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ClaudeCodeEditorTabs">
-    <option name="activeSessionId" value="ce8b3645-d26c-4b1a-a45e-22cf2147627c" />
+    <option name="activeSessionId" value="37e9a62c-8294-465b-a3ff-4b2016437063" />
     <option name="openSessionIds">
       <list>
         <option value="ce8b3645-d26c-4b1a-a45e-22cf2147627c" />
+        <option value="37e9a62c-8294-465b-a3ff-4b2016437063" />
       </list>
     </option>
     <option name="sessionPaths">
       <map>
+        <entry key="37e9a62c-8294-465b-a3ff-4b2016437063" value="/sessions/02ae00f3-f87b-411a-b47e-287ccd7fa592" />
         <entry key="ce8b3645-d26c-4b1a-a45e-22cf2147627c" value="/sessions/cfdec8d5-62f8-4475-8b9c-cc4c49a32217" />
       </map>
     </option>
     <option name="sessionTitles">
       <map>
+        <entry key="37e9a62c-8294-465b-a3ff-4b2016437063" value="my app is running on port 8080, but when I open sw" />
         <entry key="ce8b3645-d26c-4b1a-a45e-22cf2147627c" value="I'm building a Spring Boot project and want to add" />
       </map>
     </option>
