@@ -26,7 +26,7 @@ public class News {
     @Size(max=1000, message = "Description cannot exceed 1000 characters")
     private String description;
 
-    private String author;
+    private String reportedBy;
 
     @PastOrPresent(message = "Reported date cannot be in future")
     private LocalDateTime reportedAt = LocalDateTime.now();

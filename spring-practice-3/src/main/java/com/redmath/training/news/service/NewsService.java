@@ -6,9 +6,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.security.access.AccessDeniedException;
 import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class NewsService {
@@ -32,38 +37,75 @@ public class NewsService {
     }
 
     public News create(News news){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        news.setReportedBy(auth.getName());
         return newsRepository.save(news);
     }
 
-    public News update(Long newsId, News news){
-        if (!newsRepository.existsById(newsId)) {
-            throw new NoSuchElementException("News not found: " + newsId);
-        }
-        news.setNewsId(newsId);
-        return newsRepository.save(news);
-    }
+    @Transactional
+    public News update(Long newsId, News news) {
+        News existingNews = newsRepository.findById(newsId)
+                .orElseThrow(() -> new NoSuchElementException("News not found with ID: " + newsId));
 
-    public News partialUpdate(Long newsId, News news){
-        News existingNews = findById(newsId);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if (news.getTitle() != null) {
+        boolean isOwner = existingNews.getReportedBy().equals(auth.getName());
+        boolean isEditor = hasAnyRole(auth, "ROLE_editor");
+
+        if (isOwner || isEditor) {
             existingNews.setTitle(news.getTitle());
-        }
-        if (news.getDescription() != null) {
             existingNews.setDescription(news.getDescription());
-        }
-        if (news.getAuthor() != null) {
-            existingNews.setAuthor(news.getAuthor());
-        }
-        if (news.getReportedAt() != null) {
-            existingNews.setReportedAt(news.getReportedAt());
-        }
 
-        newsRepository.save(existingNews);
-        return existingNews;
+            return newsRepository.save(existingNews);
+        } else {
+            throw new AccessDeniedException("You do not have permission to update this news article.");
+        }
+    }
+
+    @Transactional
+    public News partialUpdate(Long newsId, News news){
+        News existingNews = newsRepository.findById(newsId)
+                .orElseThrow(()-> new NoSuchElementException("News not found with ID: " + newsId));
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        boolean isOwner = existingNews.getReportedBy().equals(auth.getName());
+        boolean isEditor = hasAnyRole(auth, "ROLE_editor");
+
+        if(isOwner || isEditor){
+            if (news.getTitle() != null) {
+                existingNews.setTitle(news.getTitle());
+            }
+            if (news.getDescription() != null) {
+                existingNews.setDescription(news.getDescription());
+            }
+            if (news.getReportedBy() != null) {
+                existingNews.setReportedBy(news.getReportedBy());
+            }
+            if (news.getReportedAt() != null) {
+                existingNews.setReportedAt(news.getReportedAt());
+            }
+
+            newsRepository.save(existingNews);
+            return existingNews;
+
+        }else {
+            throw new AccessDeniedException("You do not have permission to update this news article.");
+        }
     }
 
     public void delete(Long newsId){
         newsRepository.deleteById(newsId);
     }
+
+    private boolean hasAnyRole(Authentication auth, String role){
+        AtomicBoolean result = new AtomicBoolean(false);
+        auth.getAuthorities().forEach(value -> {
+            if(value.getAuthority().equals(role)){
+                result.set(true);
+            }
+        });
+        return result.get();
+    }
+
 }

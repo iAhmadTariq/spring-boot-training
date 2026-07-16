@@ -6,21 +6,24 @@ databaseChangeLog:
         - insert:
             tableName: api_user
             columns:
-              - column: { name: user_id, value: 0 }
-              - column: { name: user_name, value: 'reporter' }
+              - column: { name: user_name, value: 'reporter1' }
               - column: { name: password, value: '{bcrypt}$2y$10$8eYoKfIAX0FPCAteOAi87.89478bTMjQjrKfnQsRLV2Uv5VPYCKZe' }
               - column: { name: roles, value: 'reporter' }
         - insert:
             tableName: api_user
             columns:
-              - column: { name: user_id, value: 1 }
+              - column: { name: user_name, value: 'reporter2' }
+              - column: { name: password, value: '{bcrypt}$2y$10$8eYoKfIAX0FPCAteOAi87.89478bTMjQjrKfnQsRLV2Uv5VPYCKZe' }
+              - column: { name: roles, value: 'reporter' }
+        - insert:
+            tableName: api_user
+            columns:
               - column: { name: user_name, value: 'admin' }
               - column: { name: password, value: '{noop}admin123' }
               - column: { name: roles, value: 'admin' }
         - insert:
             tableName: api_user
             columns:
-              - column: { name: user_id, value: 2 }
               - column: { name: user_name, value: 'editor' }
               - column: { name: password, value: '{noop}editor123' }
               - column: { name: roles, value: 'editor' }
