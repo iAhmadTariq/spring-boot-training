@@ -88,6 +88,15 @@ const STATUS_TEXT = {
 
 const grid = document.getElementById('endpoints-grid');
 
+const CSRF_COOKIE_NAME = 'XSRF-TOKEN';
+const CSRF_HEADER_NAME = 'X-XSRF-TOKEN';
+const CSRF_SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS', 'TRACE']);
+
+function getCsrfToken() {
+  const match = document.cookie.match(new RegExp(`(?:^|; )${CSRF_COOKIE_NAME}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
 function escapeHtml(value) {
   const div = document.createElement('div');
   div.textContent = value ?? '';
@@ -222,9 +231,16 @@ async function executeEndpoint(endpoint, card) {
   setLoading(card, true);
   const started = performance.now();
   try {
+    const headers = {};
+    if (requestBody !== undefined) headers['Content-Type'] = 'application/json';
+    if (!CSRF_SAFE_METHODS.has(endpoint.method)) {
+      const csrfToken = getCsrfToken();
+      if (csrfToken) headers[CSRF_HEADER_NAME] = csrfToken;
+    }
+
     const response = await fetch(url, {
       method: endpoint.method,
-      headers: requestBody !== undefined ? { 'Content-Type': 'application/json' } : undefined,
+      headers: Object.keys(headers).length ? headers : undefined,
       body: requestBody !== undefined ? JSON.stringify(requestBody) : undefined,
     });
     const elapsed = Math.round(performance.now() - started);
