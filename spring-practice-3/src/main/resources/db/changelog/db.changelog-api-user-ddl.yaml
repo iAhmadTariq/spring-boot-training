@@ -20,6 +20,13 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     unique: true
+                    uniqueConstraintName: uk_api_user_name
+              - column:
+                  name: token
+                  type: VARCHAR(255)
+                  constraints:
+                    unique: true
+                    uniqueConstraintName: uk_api_user_token
               - column:
                   name: password
                   type: VARCHAR(1000)

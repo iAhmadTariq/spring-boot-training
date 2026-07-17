@@ -18,6 +18,7 @@ public class ApiUser {
     private String userName;
     private String password;
     private String roles;
+    private String token;
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt = LocalDateTime.now();
 }

@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ClaudeCodeEditorTabs">
-    <option name="activeSessionId" value="37e9a62c-8294-465b-a3ff-4b2016437063" />
+    <option name="activeSessionId" value="89fd54ca-083a-4d5a-8c5e-51315d466731" />
     <option name="openSessionIds">
       <list>
         <option value="ce8b3645-d26c-4b1a-a45e-22cf2147627c" />
-        <option value="37e9a62c-8294-465b-a3ff-4b2016437063" />
+        <option value="89fd54ca-083a-4d5a-8c5e-51315d466731" />
       </list>
     </option>
     <option name="sessionPaths">
       <map>
-        <entry key="37e9a62c-8294-465b-a3ff-4b2016437063" value="/sessions/02ae00f3-f87b-411a-b47e-287ccd7fa592" />
+        <entry key="89fd54ca-083a-4d5a-8c5e-51315d466731" value="/sessions/b1110f98-d25d-4f2a-b46a-e02c13f07936" />
         <entry key="ce8b3645-d26c-4b1a-a45e-22cf2147627c" value="/sessions/cfdec8d5-62f8-4475-8b9c-cc4c49a32217" />
       </map>
     </option>
     <option name="sessionTitles">
       <map>
-        <entry key="37e9a62c-8294-465b-a3ff-4b2016437063" value="my app is running on port 8080, but when I open sw" />
+        <entry key="89fd54ca-083a-4d5a-8c5e-51315d466731" value="I added OAuth2 in my app, login gives the token I" />
         <entry key="ce8b3645-d26c-4b1a-a45e-22cf2147627c" value="I'm building a Spring Boot project and want to add" />
       </map>
     </option>

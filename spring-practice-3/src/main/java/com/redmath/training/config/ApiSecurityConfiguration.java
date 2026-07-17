@@ -1,11 +1,19 @@
 package com.redmath.training.config;
 
+import com.redmath.training.user.model.ApiUser;
+import com.redmath.training.user.service.ApiUserService;
+import jakarta.servlet.http.Cookie;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.oauth2.core.DefaultOAuth2AuthenticatedPrincipal;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
+import org.springframework.security.oauth2.server.resource.introspection.OAuth2IntrospectionAuthenticatedPrincipal;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
@@ -13,12 +21,15 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
 import jakarta.servlet.http.HttpServletResponse;
 
+import java.util.Arrays;
+import java.util.Map;
+
 @Configuration
 @EnableWebSecurity
 public class ApiSecurityConfiguration {
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http){
+    public SecurityFilterChain filterChain(HttpSecurity http, ApiUserService userService, ApiUserService apiUserService){
         http.authorizeHttpRequests(config-> config
                 .requestMatchers("/api/v1/welcome","/", "/index.html", "/static/**", "/css/**", "/js/**", "/favicon.ico").permitAll()
                 .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
@@ -28,10 +39,37 @@ public class ApiSecurityConfiguration {
                 .requestMatchers(HttpMethod.PATCH, "/api/v1/news/*").hasAnyRole("reporter","editor")
                 .requestMatchers(HttpMethod.DELETE, "/api/v1/news/*").hasAnyRole("editor")
                 .anyRequest().hasRole("admin"))
-                .formLogin(form-> form.defaultSuccessUrl("/",true))
+                .formLogin(form-> form.successHandler(((request, response, authentication) -> {
+                    ApiUser apiUser = userService.generateToken(authentication.getName());
+
+                    Cookie cookie = new Cookie("access_token", apiUser.getToken());
+                    cookie.setHttpOnly(true);
+                    cookie.setSecure(true);
+                    cookie.setPath("/");
+                    cookie.setMaxAge(24 * 60 * 60);
+                    response.addCookie(cookie);
+
+                    response.sendRedirect("/");
+                })))
                 .csrf(config->config.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                         .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
-                .exceptionHandling(handling -> handling.accessDeniedHandler(accessDeniedHandler()));
+                .sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                .exceptionHandling(handling -> handling.accessDeniedHandler(accessDeniedHandler()))
+                .oauth2ResourceServer(config -> config.opaqueToken(
+                    config2 -> config2.introspector(token -> {
+                        ApiUser user = apiUserService.findByToken(token);
+                        String[] roles = Arrays.stream(user.getRoles().split(","))
+                                .map(role -> "ROLE_" + role.trim())
+                                .toArray(String[]::new);
+                        return new DefaultOAuth2AuthenticatedPrincipal(
+                                user.getUserName(),
+                                Map.of("sub",user.getUserName()),
+                                AuthorityUtils.createAuthorityList(roles)
+                        );
+                    })
+                ));
+
         return http.build();
     }
 
