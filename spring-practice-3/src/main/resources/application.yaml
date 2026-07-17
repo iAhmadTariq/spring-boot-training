@@ -12,6 +12,14 @@ spring:
       client:
         url: http://localhost:8081
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${CLIENT_ID}
+            client-secret: ${CLIENT_SECRET}
+
 logging.level:
   sql: debug
   liquibase: debug

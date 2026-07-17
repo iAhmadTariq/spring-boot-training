@@ -33,17 +33,26 @@ public class ApiUserService implements UserDetailsService {
     }
 
     public ApiUser generateToken(String username){
-        ApiUser user = repository.findByUserName(username).get();
+        ApiUser user = repository.findByUserName(username)
+                .orElseThrow(() -> new UsernameNotFoundException("No API user found for username: " + username));
 
         user.setToken(UUID.randomUUID().toString());
         return repository.save(user);
     }
 
     public ApiUser findByToken(String token){
-        Optional<ApiUser> user = repository.findByToken(token);
-        if(user.isEmpty()){
-            throw new OAuth2AuthenticationException("Invalid Token");
-        }
-        return  user.get();
+        return repository.findByToken(token)
+                .orElseThrow(() -> new OAuth2AuthenticationException("Invalid or expired access token"));
+    }
+
+    public ApiUser provisionOAuth2User(String username){
+        return repository.findByUserName(username)
+                .orElseGet(() -> {
+                    ApiUser newUser = new ApiUser();
+                    newUser.setUserName(username);
+                    newUser.setPassword("{noop}" + UUID.randomUUID());
+                    newUser.setRoles("reporter");
+                    return repository.save(newUser);
+                });
     }
 }

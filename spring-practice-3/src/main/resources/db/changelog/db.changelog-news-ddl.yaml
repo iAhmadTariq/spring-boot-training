@@ -10,7 +10,6 @@ databaseChangeLog:
                   name: news_id
                   type: BIGINT
                   autoIncrement: true
-
                   constraints:
                     primaryKey: true
                     primaryKeyName: pk_news
