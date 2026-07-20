@@ -32,7 +32,7 @@ public class ApiSecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http, ApiUserService userService,
                                            JwtTokenService jwtTokenService,
                                            ApiUserService apiUserService){
-        http.authorizeHttpRequests(config-> config.requestMatchers("/api/v1/auth/**").permitAll()
+        http.authorizeHttpRequests(config-> config.requestMatchers("/api/v1/auth/*").permitAll()
                 .requestMatchers("/api/v1/welcome","/", "/index.html", "/static/**", "/css/**", "/js/**", "/favicon.ico").permitAll()
                 .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                 .requestMatchers(HttpMethod.GET,"/api/v1/news","/api/v1/news/*").permitAll()
@@ -40,10 +40,13 @@ public class ApiSecurityConfiguration {
                 .requestMatchers(HttpMethod.PUT, "/api/v1/news/*").hasAnyRole("reporter","editor")
                 .requestMatchers(HttpMethod.PATCH, "/api/v1/news/*").hasAnyRole("reporter","editor")
                 .requestMatchers(HttpMethod.DELETE, "/api/v1/news/*").hasAnyRole("editor")
-                .anyRequest().hasRole("admin"))
+                .anyRequest().authenticated())
                 .formLogin(form-> form.successHandler(((request, response, authentication) -> {
-                    String token = jwtTokenService.generateToken(authentication);
-                    response.getWriter().write("{\"access_token\":\"" + token + "\"}");
+                    String accessToken = jwtTokenService.generateToken(authentication);
+                    String refreshToken = jwtTokenService.generateRefreshToken(authentication);
+
+                    response.setContentType("application/json");
+                    response.getWriter().write(String.format("{\"access_token\":\"%s\", {\"refresh_token\":\"%s\"}",accessToken,refreshToken));
                 })))
                 .csrf(config->config.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                         .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
@@ -72,9 +75,12 @@ public class ApiSecurityConfiguration {
                             if(authentication instanceof OAuth2AuthenticationToken oauthToken){
                                 String email = getEmail(authentication, oauthToken);
                                 apiUserService.provisionOAuth2User(email);
-                                String token = jwtTokenService.generateToken(authentication);
-                                response.getWriter().write("{\"access_token\":\"" + token + "\"}");
-                            }
+
+                                String accessToken = jwtTokenService.generateToken(authentication);
+                                String refreshToken = jwtTokenService.generateRefreshToken(authentication);
+
+                                response.setContentType("application/json");
+                                response.getWriter().write(String.format("{\"access_token\":\"%s\", {\"refresh_token\":\"%s\"}",accessToken,refreshToken));                            }
                         })
                 ));
 
