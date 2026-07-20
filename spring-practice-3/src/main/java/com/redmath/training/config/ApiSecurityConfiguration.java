@@ -2,6 +2,7 @@ package com.redmath.training.config;
 
 import com.redmath.training.security.JwtTokenService;
 import com.redmath.training.user.service.ApiUserService;
+import org.jspecify.annotations.Nullable;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -11,6 +12,8 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
@@ -65,15 +68,29 @@ public class ApiSecurityConfiguration {
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
                 .oauth2Login(config-> config.successHandler((
                         (request, response, authentication) -> {
-                            OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-                            String email = oAuth2User.getAttribute("email");
-                            apiUserService.provisionOAuth2User(email);
-                            String token = jwtTokenService.generateToken(authentication);
-                            response.getWriter().write("{\"access_token\":\"" + token + "\"}");
+
+                            if(authentication instanceof OAuth2AuthenticationToken oauthToken){
+                                String email = getEmail(authentication, oauthToken);
+                                apiUserService.provisionOAuth2User(email);
+                                String token = jwtTokenService.generateToken(authentication);
+                                response.getWriter().write("{\"access_token\":\"" + token + "\"}");
+                            }
                         })
                 ));
 
         return http.build();
+    }
+
+    private static @Nullable String getEmail(Authentication authentication, OAuth2AuthenticationToken oauthToken) {
+        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+        String provider = oauthToken.getAuthorizedClientRegistrationId();
+        String email;
+        if("github".equals(provider)){
+            email = oAuth2User.getAttribute("login");
+        }else{
+            email = oAuth2User.getAttribute("email");
+        }
+        return email;
     }
 
     private AccessDeniedHandler accessDeniedHandler(){
