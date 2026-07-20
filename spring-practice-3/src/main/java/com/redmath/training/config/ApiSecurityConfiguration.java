@@ -15,6 +15,8 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.oauth2.core.DefaultOAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.oauth2.server.resource.introspection.OAuth2IntrospectionAuthenticatedPrincipal;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -44,32 +46,35 @@ public class ApiSecurityConfiguration {
                 .requestMatchers(HttpMethod.DELETE, "/api/v1/news/*").hasAnyRole("editor")
                 .anyRequest().hasRole("admin"))
                 .formLogin(form-> form.successHandler(((request, response, authentication) -> {
-                    accessTokenCookieIssuer.issueFor(authentication.getName(),response);
+                    accessTokenCookieIssuer.issueFor(authentication,response);
                 })))
                 .csrf(config->config.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                         .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
                 .sessionManagement(config -> config.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
                 .exceptionHandling(handling -> handling.accessDeniedHandler(accessDeniedHandler()))
-                .oauth2ResourceServer(config -> config.opaqueToken(
-                    config2 -> config2.introspector(token -> {
-                        ApiUser user = apiUserService.findByToken(token);
-                        String[] roles = Arrays.stream(user.getRoles().split(","))
-                                .map(role -> "ROLE_" + role.trim())
-                                .toArray(String[]::new);
-                        return new DefaultOAuth2AuthenticatedPrincipal(
-                                user.getUserName(),
-                                Map.of("sub",user.getUserName()),
-                                AuthorityUtils.createAuthorityList(roles)
-                        );
-                    })
-                ))
+//                .oauth2ResourceServer(config -> config.opaqueToken(
+//                    config2 -> config2.introspector(token -> {
+//                        ApiUser user = apiUserService.findByToken(token);
+//                        String[] roles = Arrays.stream(user.getRoles().split(","))
+//                                .map(role -> "ROLE_" + role.trim())
+//                                .toArray(String[]::new);
+//                        return new DefaultOAuth2AuthenticatedPrincipal(
+//                                user.getUserName(),
+//                                Map.of("sub",user.getUserName()),
+//                                AuthorityUtils.createAuthorityList(roles)
+//                        );
+//                    })
+//                ))
+
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
                 .oauth2Login(config-> config.successHandler((
                         (request, response, authentication) -> {
                             OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
                             String email = oAuth2User.getAttribute("email");
                             apiUserService.provisionOAuth2User(email);
-                            accessTokenCookieIssuer.issueFor(email,response);
+                            accessTokenCookieIssuer.issueFor(authentication,response);
                         })
                 ));
 
@@ -83,5 +88,16 @@ public class ApiSecurityConfiguration {
             String message = ex.getMessage().replace("\\", "\\\\").replace("\"", "\\\"");
             response.getWriter().write("{\"message\":\"" + message + "\"}");
         };
+    }
+
+    @Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter authoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        authoritiesConverter.setAuthoritiesClaimName("scope");
+        authoritiesConverter.setAuthorityPrefix("");
+
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(authoritiesConverter);
+        return converter;
     }
 }

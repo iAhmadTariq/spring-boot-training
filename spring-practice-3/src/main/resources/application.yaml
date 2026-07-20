@@ -7,10 +7,10 @@ spring:
     hibernate:
       ddl-auto: none
 
-  boot:
-    admin:
-      client:
-        url: http://localhost:8081
+#  boot:
+#    admin:
+#      client:
+#        url: http://localhost:8081
 
   security:
     oauth2:
@@ -52,3 +52,6 @@ management:
 app:
   name:
     welcome: "${APP_MESSAGE_WELCOME:${app.message.welcome:Hello!}}"
+
+jwt:
+  secret: ${JWT_SECRET}

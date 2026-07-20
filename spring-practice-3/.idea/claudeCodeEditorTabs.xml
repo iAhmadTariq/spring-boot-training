@@ -1,23 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ClaudeCodeEditorTabs">
-    <option name="activeSessionId" value="d3a81589-ccf0-49cc-8805-dfe09dd2d345" />
+    <option name="activeSessionId" value="ce8b3645-d26c-4b1a-a45e-22cf2147627c" />
     <option name="openSessionIds">
       <list>
         <option value="ce8b3645-d26c-4b1a-a45e-22cf2147627c" />
-        <option value="d3a81589-ccf0-49cc-8805-dfe09dd2d345" />
       </list>
     </option>
     <option name="sessionPaths">
       <map>
         <entry key="ce8b3645-d26c-4b1a-a45e-22cf2147627c" value="/sessions/cfdec8d5-62f8-4475-8b9c-cc4c49a32217" />
-        <entry key="d3a81589-ccf0-49cc-8805-dfe09dd2d345" value="/sessions/2a0ec382-427c-4654-8d47-0bf83d099dad" />
       </map>
     </option>
     <option name="sessionTitles">
       <map>
         <entry key="ce8b3645-d26c-4b1a-a45e-22cf2147627c" value="I'm building a Spring Boot project and want to add" />
-        <entry key="d3a81589-ccf0-49cc-8805-dfe09dd2d345" value="I added google auth, I added same redirect uri as" />
       </map>
     </option>
   </component>
