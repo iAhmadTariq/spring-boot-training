@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -19,32 +20,38 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.util.Base64;
 
 @Configuration
 public class JwtConfig {
-    @Value("${jwt.secret}")
-    private String secret;
+    private final SignatureAlgorithm jwtAlgorithm;
 
-    @Bean
-    public SecretKey jwtSecretKey() {
-        byte[] keyBytes = Base64.getDecoder().decode(secret);
-        return new SecretKeySpec(keyBytes, "HmacSHA256");
+    public JwtConfig() {
+        this.jwtAlgorithm = SignatureAlgorithm.PS256;
     }
 
     @Bean
-    public JwtEncoder jwtEncoder(SecretKey jwtSecretKey) {
-        JWK jwk = new OctetSequenceKey.Builder(jwtSecretKey)
-                .algorithm(JWSAlgorithm.HS256)
-                .build();
-        JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
-        return new NimbusJwtEncoder(jwks);
+    public KeyPair rsaKeyPair() throws NoSuchAlgorithmException {
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+        return keyPairGenerator.generateKeyPair();
     }
 
     @Bean
-    public JwtDecoder jwtDecoder(SecretKey jwtSecretKey) {
-        return NimbusJwtDecoder.withSecretKey(jwtSecretKey)
-                .macAlgorithm(MacAlgorithm.HS256)
+    public JwtEncoder jwtEncoder(KeyPair rsaKeyPair) {
+        return NimbusJwtEncoder.withKeyPair((RSAPublicKey) rsaKeyPair.getPublic(),
+                (RSAPrivateKey) rsaKeyPair.getPrivate())
+                .algorithm(jwtAlgorithm).build();
+    }
+
+    @Bean
+    public JwtDecoder jwtDecoder(KeyPair rsaKeyPair) {
+        return NimbusJwtDecoder.withPublicKey((RSAPublicKey) rsaKeyPair.getPublic())
+                .signatureAlgorithm(jwtAlgorithm)
                 .build();
     }
 }
