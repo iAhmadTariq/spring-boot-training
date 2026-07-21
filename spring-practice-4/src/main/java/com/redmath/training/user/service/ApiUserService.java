@@ -1,0 +1,58 @@
+package com.redmath.training.user.service;
+
+import com.redmath.training.user.model.ApiUser;
+import com.redmath.training.user.repository.ApiUserRepository;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+import java.util.UUID;
+
+@Service
+public class ApiUserService implements UserDetailsService {
+
+    private final ApiUserRepository repository;
+
+    ApiUserService(ApiUserRepository repository){
+        this.repository = repository;
+    }
+
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
+        Optional<ApiUser> user = repository.findByUserName(username);
+
+        if(user.isEmpty()){
+            throw new UsernameNotFoundException("Username doesn't exist");
+        }
+        UserDetails userDetails = User.withUsername(username).password(user.get().getPassword()).authorities(user.get().getRoles().split(",")).build();
+        return userDetails;
+
+    }
+
+    public ApiUser generateToken(String username){
+        ApiUser user = repository.findByUserName(username)
+                .orElseThrow(() -> new UsernameNotFoundException("No API user found for username: " + username));
+
+        user.setToken(UUID.randomUUID().toString());
+        return repository.save(user);
+    }
+
+    public ApiUser findByToken(String token){
+        return repository.findByToken(token)
+                .orElseThrow(() -> new OAuth2AuthenticationException("Invalid or expired access token"));
+    }
+
+    public ApiUser provisionOAuth2User(String username){
+        return repository.findByUserName(username)
+                .orElseGet(() -> {
+                    ApiUser newUser = new ApiUser();
+                    newUser.setUserName(username);
+                    newUser.setPassword("{noop}" + UUID.randomUUID());
+                    newUser.setRoles("reporter");
+                    return repository.save(newUser);
+                });
+    }
+}

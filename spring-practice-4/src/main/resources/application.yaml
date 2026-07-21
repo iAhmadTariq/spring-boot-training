@@ -1,0 +1,60 @@
+spring:
+  application:
+    name: spring-practice-4
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+
+#  boot:
+#    admin:
+#      client:
+#        url: http://localhost:8081
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${CLIENT_ID}
+            client-secret: ${CLIENT_SECRET}
+          github:
+            client-id: ${GITHUB_CLIENT_ID}
+            client-secret: ${GITHUB_CLIENT_SECRET}
+
+logging.level:
+  sql: debug
+  liquibase: debug
+  web: debug
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  tracing:
+    sampling:
+      probability: 1.0
+    export:
+      enabled: true
+  opentelemetry:
+    tracing:
+      export:
+        otlp:
+          endpoint: http://localhost:4317
+          transport: grpc
+  otlp:
+    metrics:
+      export:
+        enabled: false
+  metrics:
+    tags:
+      application: spring-practice-4
+
+app:
+  name:
+    welcome: "${APP_MESSAGE_WELCOME:${app.message.welcome:Hello!}}"
+
+jwt:
+  secret: ${JWT_SECRET}

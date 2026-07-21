@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-api-user-table
+      author: ahmad.tariq
+      changes:
+        - createTable:
+            tableName: api_user
+            columns:
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_user
+                    nullable: false
+              - column:
+                  name: user_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uk_api_user_name
+              - column:
+                  name: token
+                  type: VARCHAR(255)
+                  constraints:
+                    unique: true
+                    uniqueConstraintName: uk_api_user_token
+              - column:
+                  name: password
+                  type: VARCHAR(1000)
+              - column:
+                  name: roles
+                  type: VARCHAR(255)
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
