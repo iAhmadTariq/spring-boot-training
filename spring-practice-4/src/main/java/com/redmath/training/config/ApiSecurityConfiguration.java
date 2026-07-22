@@ -38,24 +38,22 @@ public class ApiSecurityConfiguration {
             .requestMatchers(HttpMethod.DELETE, "/api/v1/news/*").hasAnyAuthority("editor")
             .anyRequest().permitAll())
         .formLogin(form -> form
-            .successHandler(((request, response, authentication) -> {
-              apiSecurityService.onAuthenticationSuccessForm(jwtTokenService, request, response,
-                  authentication);
-            })))
+            .successHandler((request, response, authentication) -> apiSecurityService
+                .onAuthenticationSuccessForm(jwtTokenService, request, response, authentication)))
         .csrf(config -> config
             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
             .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
         .sessionManagement(config -> config
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .oauth2ResourceServer(config -> config.opaqueToken(
-            config2 -> config2.introspector(apiSecurityService::authenticateRequest)
-        ))
-        .oauth2Login(config -> config.successHandler((
-            (request, response, authentication) -> {
-              apiSecurityService.onAuthenticationSuccessOauth(jwtTokenService, request, response,
-                  authentication);
-            })
-        ));
+        .oauth2ResourceServer(config -> config
+            .opaqueToken(
+                config2 -> config2.introspector(apiSecurityService::authenticateRequest)
+            )
+        )
+        .oauth2Login(config -> config
+            .successHandler((request, response, authentication) -> apiSecurityService
+                .onAuthenticationSuccessOauth(jwtTokenService, request, response, authentication))
+        );
     return http.build();
   }
 
