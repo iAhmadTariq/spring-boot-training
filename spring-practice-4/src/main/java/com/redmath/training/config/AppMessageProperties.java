@@ -11,5 +11,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "app.message")
 public class AppMessageProperties {
-    private String welcome;
+
+  private String welcome;
 }

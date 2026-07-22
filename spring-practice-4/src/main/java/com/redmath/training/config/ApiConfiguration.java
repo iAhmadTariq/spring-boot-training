@@ -7,8 +7,10 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.context.annotation.Configuration;
 
-@OpenAPIDefinition (info= @Info(title = "News API"), security = @SecurityRequirement(name="BearerAuth"))
-@SecurityScheme (name="BearerAuth", type= SecuritySchemeType.HTTP, scheme = "bearer")
+@OpenAPIDefinition(info = @Info(title = "News API"),
+    security = @SecurityRequirement(name = "BearerAuth"))
+@SecurityScheme(name = "BearerAuth", type = SecuritySchemeType.HTTP, scheme = "bearer")
 @Configuration
 public class ApiConfiguration {
+
 }
