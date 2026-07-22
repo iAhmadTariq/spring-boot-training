@@ -1,7 +1,9 @@
 package com.redmath.training.news.service;
 
 import com.redmath.training.news.model.News;
+import com.redmath.training.news.model.NewsDto;
 import com.redmath.training.news.repository.NewsRepository;
+import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -35,40 +37,43 @@ public class NewsService {
         .orElseThrow(() -> new NoSuchElementException("News not found: " + newsId));
   }
 
-  public News create(News news) {
+  public News create(NewsDto newsDto) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+    News news = new News();
+    news.setTitle(newsDto.getTitle());
+    news.setDescription(newsDto.getDescription());
     news.setReportedBy(auth.getName());
+    news.setReportedAt(LocalDateTime.now());
+
     return newsRepository.save(news);
   }
 
   @Transactional
-  public News update(Long newsId, News news) {
+  public News update(Long newsId, NewsDto newsDto) {
     News existingNews = newsRepository.findById(newsId)
         .orElseThrow(() -> new NoSuchElementException("News not found with ID: " + newsId));
 
     authorizeOwnerOrEditor(existingNews);
 
-    existingNews.setTitle(news.getTitle());
-    existingNews.setDescription(news.getDescription());
+    existingNews.setTitle(newsDto.getTitle());
+    existingNews.setDescription(newsDto.getDescription());
 
     return newsRepository.save(existingNews);
   }
 
   @Transactional
-  public News partialUpdate(Long newsId, News news) {
+  public News partialUpdate(Long newsId, NewsDto newsDto) {
     News existingNews = newsRepository.findById(newsId)
         .orElseThrow(() -> new NoSuchElementException("News not found with ID: " + newsId));
 
     authorizeOwnerOrEditor(existingNews);
 
-    if (news.getTitle() != null) {
-      existingNews.setTitle(news.getTitle());
+    if (newsDto.getTitle() != null) {
+      existingNews.setTitle(newsDto.getTitle());
     }
-    if (news.getDescription() != null) {
-      existingNews.setDescription(news.getDescription());
-    }
-    if (news.getReportedAt() != null) {
-      existingNews.setReportedAt(news.getReportedAt());
+    if (newsDto.getDescription() != null) {
+      existingNews.setDescription(newsDto.getDescription());
     }
 
     return newsRepository.save(existingNews);
