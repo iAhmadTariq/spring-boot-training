@@ -13,7 +13,6 @@
     <groupId>com.redmath.training</groupId>
     <artifactId>spring-practice-4</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-
     <properties>
         <java.version>25</java.version>
         <spring-boot-admin.version>4.0.4</spring-boot-admin.version>
@@ -161,6 +160,18 @@
     </dependencyManagement>
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

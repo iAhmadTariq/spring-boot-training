@@ -5,6 +5,7 @@ import com.redmath.training.news.model.NewsDto;
 import com.redmath.training.news.repository.NewsRepository;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -37,20 +38,22 @@ public class NewsService {
         .orElseThrow(() -> new NoSuchElementException("News not found: " + newsId));
   }
 
-  public News create(NewsDto newsDto) {
+  public NewsDto create(NewsDto newsDto) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
+    if (auth == null) {
+      throw new AccessDeniedException("Authentication required");
+    }
     News news = new News();
     news.setTitle(newsDto.getTitle());
     news.setDescription(newsDto.getDescription());
     news.setReportedBy(auth.getName());
     news.setReportedAt(LocalDateTime.now());
 
-    return newsRepository.save(news);
+    return NewsDto.from(newsRepository.save(news));
   }
 
   @Transactional
-  public News update(Long newsId, NewsDto newsDto) {
+  public NewsDto update(Long newsId, NewsDto newsDto) {
     News existingNews = newsRepository.findById(newsId)
         .orElseThrow(() -> new NoSuchElementException("News not found with ID: " + newsId));
 
@@ -59,11 +62,11 @@ public class NewsService {
     existingNews.setTitle(newsDto.getTitle());
     existingNews.setDescription(newsDto.getDescription());
 
-    return newsRepository.save(existingNews);
+    return NewsDto.from(newsRepository.save(existingNews));
   }
 
   @Transactional
-  public News partialUpdate(Long newsId, NewsDto newsDto) {
+  public NewsDto partialUpdate(Long newsId, NewsDto newsDto) {
     News existingNews = newsRepository.findById(newsId)
         .orElseThrow(() -> new NoSuchElementException("News not found with ID: " + newsId));
 
@@ -76,17 +79,22 @@ public class NewsService {
       existingNews.setDescription(newsDto.getDescription());
     }
 
-    return newsRepository.save(existingNews);
+    return NewsDto.from(newsRepository.save(existingNews));
   }
 
-  public void delete(Long newsId) {
-    News existingNews = newsRepository.findById(newsId)
-        .orElseThrow(() -> new NoSuchElementException("News not found with ID: " + newsId));
-    newsRepository.delete(existingNews);
+  public void delete(Long newsId) throws Exception {
+    Optional<News> existingNews = newsRepository.findById(newsId);
+    if (existingNews.isEmpty()) {
+      throw new Exception("News not found with ID: " + newsId);
+    }
+    newsRepository.delete(existingNews.get());
   }
 
   private void authorizeOwnerOrEditor(News existingNews) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    if (auth == null) {
+      throw new AccessDeniedException("Authentication required");
+    }
     boolean isOwner = existingNews.getReportedBy().equals(auth.getName());
     boolean isEditor = hasRole(auth, "editor");
 
@@ -97,7 +105,7 @@ public class NewsService {
 
   private boolean hasRole(Authentication auth, String role) {
     return auth.getAuthorities().stream()
-        .anyMatch(authority -> authority.getAuthority().equals(role));
+        .anyMatch(authority -> role.equals(authority.getAuthority()));
   }
 
 }

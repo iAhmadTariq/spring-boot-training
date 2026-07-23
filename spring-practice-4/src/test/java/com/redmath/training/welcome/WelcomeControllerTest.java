@@ -15,15 +15,16 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @AutoConfigureMockMvc
 public class WelcomeControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+  @Autowired
+  private MockMvc mockMvc;
 
-    @Test
-    void shouldWelcome() throws Exception{
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/welcome"))
-                .andDo(print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Welcome to News App"));
-    }
+  @Test
+  void shouldWelcome() throws Exception {
+    mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/welcome"))
+        .andDo(print())
+        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(
+            MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Welcome to News App"));
+  }
 }

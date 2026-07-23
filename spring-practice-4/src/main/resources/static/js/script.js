@@ -8,10 +8,10 @@ const ENDPOINTS = [
     title: 'List Articles',
     description: 'Retrieve a paginated, sorted list of all news articles.',
     params: [
-      { name: 'page', kind: 'query', type: 'number', value: 0 },
-      { name: 'size', kind: 'query', type: 'number', value: 10 },
-      { name: 'sortBy', kind: 'query', type: 'text', value: 'reportedAt' },
-      { name: 'direction', kind: 'query', type: 'text', value: 'desc' },
+      {name: 'page', kind: 'query', type: 'number', value: 0},
+      {name: 'size', kind: 'query', type: 'number', value: 10},
+      {name: 'sortBy', kind: 'query', type: 'text', value: 'reportedAt'},
+      {name: 'direction', kind: 'query', type: 'text', value: 'desc'},
     ],
   },
   {
@@ -20,7 +20,7 @@ const ENDPOINTS = [
     pathTemplate: '/api/v1/news/{newsId}',
     title: 'Get Article',
     description: 'Retrieve a single news article by its ID.',
-    params: [{ name: 'newsId', kind: 'path', type: 'number', value: 1 }],
+    params: [{name: 'newsId', kind: 'path', type: 'number', value: 1}],
   },
   {
     id: 'create',
@@ -43,7 +43,7 @@ const ENDPOINTS = [
     pathTemplate: '/api/v1/news/{newsId}',
     title: 'Replace Article',
     description: 'Fully replace an existing article. All fields are required.',
-    params: [{ name: 'newsId', kind: 'path', type: 'number', value: 1 }],
+    params: [{name: 'newsId', kind: 'path', type: 'number', value: 1}],
     body: {
       newsId: 1,
       title: 'Spring Boot 4.0 Released (Updated)',
@@ -58,7 +58,7 @@ const ENDPOINTS = [
     pathTemplate: '/api/v1/news/{newsId}',
     title: 'Update Article Fields',
     description: 'Partially update one or more fields on an existing article.',
-    params: [{ name: 'newsId', kind: 'path', type: 'number', value: 1 }],
+    params: [{name: 'newsId', kind: 'path', type: 'number', value: 1}],
     body: {
       title: 'Spring Boot 4.0 Released — Now With Native Compilation',
     },
@@ -69,7 +69,7 @@ const ENDPOINTS = [
     pathTemplate: '/api/v1/news/{newsId}',
     title: 'Delete Article',
     description: 'Permanently remove an article by ID.',
-    params: [{ name: 'newsId', kind: 'path', type: 'number', value: 1 }],
+    params: [{name: 'newsId', kind: 'path', type: 'number', value: 1}],
   },
 ];
 
@@ -93,7 +93,8 @@ const CSRF_HEADER_NAME = 'X-XSRF-TOKEN';
 const CSRF_SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS', 'TRACE']);
 
 function getCsrfToken() {
-  const match = document.cookie.match(new RegExp(`(?:^|; )${CSRF_COOKIE_NAME}=([^;]*)`));
+  const match = document.cookie.match(
+      new RegExp(`(?:^|; )${CSRF_COOKIE_NAME}=([^;]*)`));
   return match ? decodeURIComponent(match[1]) : null;
 }
 
@@ -107,7 +108,8 @@ function paramFieldHtml(param, kindLabel) {
   return `
     <div class="param-field">
       <label>${escapeHtml(param.name)} <span class="field-tag">${kindLabel}</span></label>
-      <input type="${param.type}" data-param="${escapeHtml(param.name)}" value="${escapeHtml(String(param.value))}" />
+      <input type="${param.type}" data-param="${escapeHtml(
+      param.name)}" value="${escapeHtml(String(param.value))}" />
     </div>
   `;
 }
@@ -118,18 +120,19 @@ function renderEndpointCard(endpoint) {
   const queryParams = endpoint.params.filter((p) => p.kind === 'query');
 
   const paramsHtml = pathParams.length || queryParams.length
-    ? `<div class="endpoint-params">
+      ? `<div class="endpoint-params">
         ${pathParams.map((p) => paramFieldHtml(p, 'Path')).join('')}
         ${queryParams.map((p) => paramFieldHtml(p, 'Query')).join('')}
       </div>`
-    : '';
+      : '';
 
   const bodyHtml = endpoint.body !== undefined
-    ? `<div class="endpoint-body-field">
+      ? `<div class="endpoint-body-field">
         <label>Request Body <span class="field-tag">JSON</span></label>
-        <textarea class="json-editor" data-role="body" rows="7" spellcheck="false">${escapeHtml(JSON.stringify(endpoint.body, null, 2))}</textarea>
+        <textarea class="json-editor" data-role="body" rows="7" spellcheck="false">${escapeHtml(
+          JSON.stringify(endpoint.body, null, 2))}</textarea>
       </div>`
-    : '';
+      : '';
 
   return `
     <article class="endpoint-card" data-endpoint-id="${endpoint.id}">
@@ -162,8 +165,8 @@ function setLoading(card, isLoading) {
   const btn = card.querySelector('[data-role="execute"]');
   btn.disabled = isLoading;
   btn.innerHTML = isLoading
-    ? '<span class="spinner-sm" aria-hidden="true"></span> Running…'
-    : '<span class="run-icon" aria-hidden="true">▶</span> Execute';
+      ? '<span class="spinner-sm" aria-hidden="true"></span> Running…'
+      : '<span class="run-icon" aria-hidden="true">▶</span> Execute';
 }
 
 function showResponse(card, result) {
@@ -182,30 +185,34 @@ function showResponse(card, result) {
   }
 
   const statusClass =
-    result.status >= 200 && result.status < 300 ? 'status-2xx' :
-    result.status >= 400 && result.status < 500 ? 'status-4xx' :
-    result.status >= 500 ? 'status-5xx' : 'status-other';
-  statusEl.textContent = `${result.status} ${STATUS_TEXT[result.status] || ''}`.trim();
+      result.status >= 200 && result.status < 300 ? 'status-2xx' :
+          result.status >= 400 && result.status < 500 ? 'status-4xx' :
+              result.status >= 500 ? 'status-5xx' : 'status-other';
+  statusEl.textContent = `${result.status} ${STATUS_TEXT[result.status]
+  || ''}`.trim();
   statusEl.className = `response-status ${statusClass}`;
   bodyEl.textContent =
-    result.data === null || result.data === undefined
-      ? '(empty response body)'
-      : typeof result.data === 'string'
-        ? result.data
-        : JSON.stringify(result.data, null, 2);
+      result.data === null || result.data === undefined
+          ? '(empty response body)'
+          : typeof result.data === 'string'
+              ? result.data
+              : JSON.stringify(result.data, null, 2);
 }
 
 function buildUrl(endpoint, card) {
   let path = endpoint.pathTemplate;
   endpoint.params
-    .filter((p) => p.kind === 'path')
-    .forEach((p) => {
-      const input = card.querySelector(`[data-param="${p.name}"]`);
-      path = path.replace(`{${p.name}}`, encodeURIComponent(input.value || p.value));
-    });
+  .filter((p) => p.kind === 'path')
+  .forEach((p) => {
+    const input = card.querySelector(`[data-param="${p.name}"]`);
+    path = path.replace(`{${p.name}}`,
+        encodeURIComponent(input.value || p.value));
+  });
 
   const queryParams = endpoint.params.filter((p) => p.kind === 'query');
-  if (queryParams.length === 0) return path;
+  if (queryParams.length === 0) {
+    return path;
+  }
 
   const qs = new URLSearchParams();
   queryParams.forEach((p) => {
@@ -220,9 +227,11 @@ async function executeEndpoint(endpoint, card) {
   if (endpoint.body !== undefined) {
     const textarea = card.querySelector('[data-role="body"]');
     try {
-      requestBody = textarea.value.trim() ? JSON.parse(textarea.value) : undefined;
+      requestBody = textarea.value.trim() ? JSON.parse(textarea.value)
+          : undefined;
     } catch (err) {
-      showResponse(card, { error: true, statusText: 'Invalid JSON body', detail: err.message });
+      showResponse(card,
+          {error: true, statusText: 'Invalid JSON body', detail: err.message});
       return;
     }
   }
@@ -232,10 +241,14 @@ async function executeEndpoint(endpoint, card) {
   const started = performance.now();
   try {
     const headers = {};
-    if (requestBody !== undefined) headers['Content-Type'] = 'application/json';
+    if (requestBody !== undefined) {
+      headers['Content-Type'] = 'application/json';
+    }
     if (!CSRF_SAFE_METHODS.has(endpoint.method)) {
       const csrfToken = getCsrfToken();
-      if (csrfToken) headers[CSRF_HEADER_NAME] = csrfToken;
+      if (csrfToken) {
+        headers[CSRF_HEADER_NAME] = csrfToken;
+      }
     }
 
     const response = await fetch(url, {
@@ -253,9 +266,14 @@ async function executeEndpoint(endpoint, card) {
         data = text;
       }
     }
-    showResponse(card, { status: response.status, elapsed, data });
+    showResponse(card, {status: response.status, elapsed, data});
   } catch (err) {
-    showResponse(card, { error: true, statusText: 'Network error', detail: err.message, elapsed: Math.round(performance.now() - started) });
+    showResponse(card, {
+      error: true,
+      statusText: 'Network error',
+      detail: err.message,
+      elapsed: Math.round(performance.now() - started)
+    });
   } finally {
     setLoading(card, false);
   }
