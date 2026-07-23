@@ -1,7 +1,6 @@
 package com.redmath.training.security;
 
 import com.redmath.training.user.service.ApiUserService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
@@ -29,7 +28,7 @@ public class ApiSecurityService {
   }
 
   public void onAuthenticationSuccessForm(JwtTokenService jwtTokenService,
-      HttpServletRequest request, HttpServletResponse response, Authentication auth)
+      HttpServletResponse response, Authentication auth)
       throws IOException {
     String accessToken = jwtTokenService.generateToken(auth);
     String refreshToken = jwtTokenService.generateRefreshToken(auth);
@@ -38,7 +37,7 @@ public class ApiSecurityService {
   }
 
   public void onAuthenticationSuccessOauth(JwtTokenService jwtTokenService,
-      HttpServletRequest request, HttpServletResponse response, Authentication auth)
+      HttpServletResponse response, Authentication auth)
       throws IOException {
     if (auth instanceof OAuth2AuthenticationToken oauthToken) {
       String email = getEmail(auth, oauthToken);
@@ -50,7 +49,6 @@ public class ApiSecurityService {
     }
   }
 
-  // Private helper method to handle token response serialization and remove duplication
   private void writeJsonResponse(HttpServletResponse response, String accessToken,
       String refreshToken)
       throws IOException {

@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+  private static final String MESSAGE_KEY_CONST = "message";
+
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
@@ -28,19 +30,19 @@ public class GlobalExceptionHandler {
   @ResponseStatus(HttpStatus.NOT_FOUND)
   @ExceptionHandler(NoSuchElementException.class)
   public Map<String, String> handleNotFound(NoSuchElementException ex) {
-    return Map.of("message", ex.getMessage());
+    return Map.of(MESSAGE_KEY_CONST, ex.getMessage());
   }
 
   @ResponseStatus(HttpStatus.FORBIDDEN)
   @ExceptionHandler(AccessDeniedException.class)
   public Map<String, String> handleAccessDenied(AccessDeniedException ex) {
-    return Map.of("message", ex.getMessage());
+    return Map.of(MESSAGE_KEY_CONST, ex.getMessage());
   }
 
   @ResponseStatus(HttpStatus.UNAUTHORIZED)
   @ExceptionHandler(AuthenticationException.class)
   public Map<String, String> handleAuthenticationFailure(AuthenticationException ex) {
-    return Map.of("message", ex.getMessage());
+    return Map.of(MESSAGE_KEY_CONST, ex.getMessage());
   }
 
 }

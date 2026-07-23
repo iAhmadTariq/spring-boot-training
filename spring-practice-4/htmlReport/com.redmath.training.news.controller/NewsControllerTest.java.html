@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NewsControllerTest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jacoco.exec</a> &gt; <a href="index.source.html" class="el_package">com.redmath.training.news.controller</a> &gt; <span class="el_source">NewsControllerTest.java</span></div><h1>NewsControllerTest.java</h1><pre class="source lang-java linenums">package com.redmath.training.news.controller;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+
+import jakarta.transaction.Transactional;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+
+@SpringBootTest
+@AutoConfigureMockMvc
+@Transactional
+<span class="fc" id="L22">public class NewsControllerTest {</span>
+
+  @Autowired
+  private MockMvc mockMvc;
+
+  @Test
+  void findAll_withoutPageParams_shouldReturnFirstPageWithDefaults() throws Exception {
+<span class="fc" id="L29">    mockMvc.perform(MockMvcRequestBuilders.get(&quot;/api/v1/news&quot;)).andDo(print())</span>
+<span class="fc" id="L30">        .andExpect(MockMvcResultMatchers.status().isOk()).andExpect(</span>
+<span class="fc" id="L31">            MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))</span>
+<span class="fc" id="L32">        .andExpect(MockMvcResultMatchers.jsonPath(&quot;$.content[0].newsId&quot;).value(1))</span>
+<span class="fc" id="L33">        .andExpect(MockMvcResultMatchers.jsonPath(&quot;$.content[9].newsId&quot;).value(10))</span>
+<span class="fc" id="L34">        .andExpect(MockMvcResultMatchers.jsonPath(&quot;$.currentPage&quot;).value(0))</span>
+<span class="fc" id="L35">        .andExpect(MockMvcResultMatchers.jsonPath(&quot;$.size&quot;).value(10))</span>
+<span class="fc" id="L36">        .andExpect(MockMvcResultMatchers.jsonPath(&quot;$.totalItems&quot;).value(20))</span>
+<span class="fc" id="L37">        .andExpect(MockMvcResultMatchers.jsonPath(&quot;$.totalPages&quot;).value(2));</span>
+<span class="fc" id="L38">  }</span>
+
+  @Test
+  void findAll_withPageParams_shouldReturnRequestedPageSortedAccordingly() throws Exception {
+<span class="fc" id="L42">    mockMvc.perform(MockMvcRequestBuilders.get(&quot;/api/v1/news&quot;).param(&quot;page&quot;, &quot;1&quot;).param(&quot;size&quot;, &quot;5&quot;)</span>
+<span class="fc" id="L43">            .param(&quot;sortBy&quot;, &quot;newsId&quot;).param(&quot;direction&quot;, &quot;asc&quot;)).andDo(print())</span>
+<span class="fc" id="L44">        .andExpect(MockMvcResultMatchers.status().isOk())</span>
+<span class="fc" id="L45">        .andExpect(MockMvcResultMatchers.jsonPath(&quot;$.content[0].newsId&quot;).value(6))</span>
+<span class="fc" id="L46">        .andExpect(MockMvcResultMatchers.jsonPath(&quot;$.content[4].newsId&quot;).value(10))</span>
+<span class="fc" id="L47">        .andExpect(MockMvcResultMatchers.jsonPath(&quot;$.currentPage&quot;).value(1))</span>
+<span class="fc" id="L48">        .andExpect(MockMvcResultMatchers.jsonPath(&quot;$.size&quot;).value(5))</span>
+<span class="fc" id="L49">        .andExpect(MockMvcResultMatchers.jsonPath(&quot;$.totalItems&quot;).value(20))</span>
+<span class="fc" id="L50">        .andExpect(MockMvcResultMatchers.jsonPath(&quot;$.totalPages&quot;).value(4));</span>
+<span class="fc" id="L51">  }</span>
+
+  @Test
+  void shouldCreateNews() throws Exception {
+<span class="fc" id="L55">    mockMvc.perform(</span>
+<span class="fc" id="L56">            MockMvcRequestBuilders.post(&quot;/api/v1/news&quot;).contentType(MediaType.APPLICATION_JSON).content(</span>
+                    &quot;{\&quot;author\&quot;:\&quot;test author\&quot;, \&quot;title\&quot;: \&quot;test title\&quot;, \&quot;description\&quot;: \&quot;test description\&quot;}&quot;)
+<span class="fc" id="L58">                .with(SecurityMockMvcRequestPostProcessors.user(&quot;reporter&quot;)</span>
+<span class="fc" id="L59">                    .authorities(AuthorityUtils.commaSeparatedStringToAuthorityList(&quot;reporter&quot;)))</span>
+<span class="fc" id="L60">                .with(SecurityMockMvcRequestPostProcessors.csrf())</span>
+        )
+<span class="fc" id="L62">        .andDo(print()).andExpect(</span>
+<span class="fc" id="L63">            MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))</span>
+<span class="fc" id="L64">        .andExpect(MockMvcResultMatchers.jsonPath(&quot;$.title&quot;).value(&quot;test title&quot;))</span>
+<span class="fc" id="L65">        .andExpect(MockMvcResultMatchers.jsonPath(&quot;$.description&quot;).value(&quot;test description&quot;))</span>
+<span class="fc" id="L66">        .andExpect(MockMvcResultMatchers.jsonPath(&quot;$.reportedAt&quot;).value(Matchers.notNullValue()))</span>
+<span class="fc" id="L67">        .andExpect(MockMvcResultMatchers.jsonPath(&quot;$.newsId&quot;).value(Matchers.notNullValue()));</span>
+<span class="fc" id="L68">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

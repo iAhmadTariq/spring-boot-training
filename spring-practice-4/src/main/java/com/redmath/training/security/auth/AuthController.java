@@ -20,7 +20,7 @@ public class AuthController {
   }
 
   @PostMapping("/refresh")
-  public ResponseEntity<?> refresh(@RequestBody Map<String, String> request) {
+  public ResponseEntity<Map<String, String>> refresh(@RequestBody Map<String, String> request) {
     String refreshToken = request.get("refresh_token");
 
     try {

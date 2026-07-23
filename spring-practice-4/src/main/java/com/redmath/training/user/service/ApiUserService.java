@@ -26,9 +26,8 @@ public class ApiUserService implements UserDetailsService {
     if (user.isEmpty()) {
       throw new UsernameNotFoundException("Username doesn't exist");
     }
-    UserDetails userDetails = User.withUsername(username).password(user.get().getPassword())
+    return User.withUsername(username).password(user.get().getPassword())
         .authorities(user.get().getRoles().split(",")).build();
-    return userDetails;
 
   }
 

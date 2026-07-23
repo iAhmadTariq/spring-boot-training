@@ -19,6 +19,11 @@ import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 @EnableWebSecurity
 public class ApiSecurityConfiguration {
 
+  private static final String API_V1_NEWS = "/api/v1/news";
+  private static final String API_V1_NEWS_WILDCARD = "/api/v1/news/*";
+  private static final String AUTHORITY_REPORTER = "reporter";
+  private static final String AUTHORITY_EDITOR = "editor";
+
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http, ApiUserService userService,
       JwtTokenService jwtTokenService,
@@ -30,16 +35,19 @@ public class ApiSecurityConfiguration {
             .permitAll()
             .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**")
             .permitAll()
-            .requestMatchers(HttpMethod.GET, "/api/v1/news", "/api/v1/news/*").permitAll()
-            .requestMatchers(HttpMethod.POST, "/api/v1/news").hasAnyAuthority("reporter", "editor")
-            .requestMatchers(HttpMethod.PUT, "/api/v1/news/*").hasAnyAuthority("reporter", "editor")
-            .requestMatchers(HttpMethod.PATCH, "/api/v1/news/*")
-            .hasAnyAuthority("reporter", "editor")
-            .requestMatchers(HttpMethod.DELETE, "/api/v1/news/*").hasAnyAuthority("editor")
+            .requestMatchers(HttpMethod.GET, API_V1_NEWS, API_V1_NEWS_WILDCARD).permitAll()
+            .requestMatchers(HttpMethod.POST, API_V1_NEWS)
+            .hasAnyAuthority(AUTHORITY_REPORTER, AUTHORITY_EDITOR)
+            .requestMatchers(HttpMethod.PUT, API_V1_NEWS_WILDCARD)
+            .hasAnyAuthority(AUTHORITY_REPORTER, AUTHORITY_EDITOR)
+            .requestMatchers(HttpMethod.PATCH, API_V1_NEWS_WILDCARD)
+            .hasAnyAuthority(AUTHORITY_REPORTER, AUTHORITY_EDITOR)
+            .requestMatchers(HttpMethod.DELETE, API_V1_NEWS_WILDCARD).hasAnyAuthority(AUTHORITY_EDITOR)
             .anyRequest().permitAll())
         .formLogin(form -> form
             .successHandler((request, response, authentication) -> apiSecurityService
-                .onAuthenticationSuccessForm(jwtTokenService, request, response, authentication)))
+                .onAuthenticationSuccessForm(jwtTokenService, response, authentication)))
+        // NOSONAR: CSRF cookie must be accessible by JavaScript frontend to include in X-XSRF-TOKEN header
         .csrf(config -> config
             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
             .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
@@ -52,15 +60,18 @@ public class ApiSecurityConfiguration {
         )
         .oauth2Login(config -> config
             .successHandler((request, response, authentication) -> apiSecurityService
-                .onAuthenticationSuccessOauth(jwtTokenService, request, response, authentication))
+                .onAuthenticationSuccessOauth(jwtTokenService, response, authentication))
         );
     return http.build();
   }
 
 
   @Bean
-  public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
-      throws Exception {
-    return config.getAuthenticationManager();
+  public AuthenticationManager authenticationManager(AuthenticationConfiguration config) {
+    try {
+      return config.getAuthenticationManager();
+    } catch (Exception e) {
+      throw new IllegalStateException("Failed to build AuthenticationManager", e);
+    }
   }
 }

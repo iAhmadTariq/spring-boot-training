@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jacoco.exec</a> &gt; <a href="index.source.html" class="el_package">com.redmath.training.security.auth</a> &gt; <span class="el_source">AuthService.java</span></div><h1>AuthService.java</h1><pre class="source lang-java linenums">package com.redmath.training.security.auth;
+
+import com.redmath.training.security.JwtTokenService;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtException;
+import org.springframework.stereotype.Service;
+
+@Service
+public class AuthService {
+
+  private final JwtTokenService jwtTokenService;
+  private final UserDetailsService userDetailsService;
+
+<span class="fc" id="L17">  public AuthService(JwtTokenService jwtTokenService, UserDetailsService userDetailsService) {</span>
+<span class="fc" id="L18">    this.jwtTokenService = jwtTokenService;</span>
+<span class="fc" id="L19">    this.userDetailsService = userDetailsService;</span>
+<span class="fc" id="L20">  }</span>
+
+  public String refreshAccessToken(String refreshToken) {
+<span class="nc bnc" id="L23" title="All 4 branches missed.">    if (refreshToken == null || refreshToken.isBlank()) {</span>
+<span class="nc" id="L24">      throw new IllegalArgumentException(&quot;Refresh token cannot be empty&quot;);</span>
+    }
+
+    try {
+<span class="nc" id="L28">      Jwt jwt = jwtTokenService.decodeToken(refreshToken);</span>
+<span class="nc" id="L29">      String username = jwt.getSubject();</span>
+<span class="nc" id="L30">      String scope = jwt.getClaimAsString(&quot;scope&quot;);</span>
+
+<span class="nc bnc" id="L32" title="All 2 branches missed.">      if (!&quot;REFRESH_TOKEN&quot;.equals(scope)) {</span>
+<span class="nc" id="L33">        throw new JwtException(&quot;Invalid token purpose&quot;);</span>
+      }
+
+<span class="nc" id="L36">      UserDetails userDetails = userDetailsService.loadUserByUsername(username);</span>
+<span class="nc" id="L37">      UsernamePasswordAuthenticationToken authentication =</span>
+<span class="nc" id="L38">          new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());</span>
+
+<span class="nc" id="L40">      return jwtTokenService.generateToken(authentication);</span>
+
+<span class="nc" id="L42">    } catch (JwtException e) {</span>
+<span class="nc" id="L43">      throw new JwtException(&quot;Invalid or expired refresh token&quot;, e);</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

@@ -82,10 +82,10 @@ public class NewsService {
     return NewsDto.from(newsRepository.save(existingNews));
   }
 
-  public void delete(Long newsId) throws Exception {
+  public void delete(Long newsId) {
     Optional<News> existingNews = newsRepository.findById(newsId);
     if (existingNews.isEmpty()) {
-      throw new Exception("News not found with ID: " + newsId);
+      throw new NoSuchElementException("News not found with ID: " + newsId);
     }
     newsRepository.delete(existingNews.get());
   }

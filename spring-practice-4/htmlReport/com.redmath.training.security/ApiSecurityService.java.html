@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ApiSecurityService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jacoco.exec</a> &gt; <a href="index.source.html" class="el_package">com.redmath.training.security</a> &gt; <span class="el_source">ApiSecurityService.java</span></div><h1>ApiSecurityService.java</h1><pre class="source lang-java linenums">package com.redmath.training.security;
+
+import com.redmath.training.user.service.ApiUserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Map;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.DefaultOAuth2AuthenticatedPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.stereotype.Service;
+import tools.jackson.databind.ObjectMapper;
+
+<span class="fc" id="L17">@Service</span>
+public class ApiSecurityService {
+
+  private final ApiUserService apiUserService;
+  private final JwtTokenService jwtTokenService;
+  private final ObjectMapper objectMapper;
+
+  public ApiSecurityService(ApiUserService apiUserService, JwtTokenService jwtTokenService,
+<span class="fc" id="L25">      ObjectMapper objectMapper) {</span>
+<span class="fc" id="L26">    this.apiUserService = apiUserService;</span>
+<span class="fc" id="L27">    this.jwtTokenService = jwtTokenService;</span>
+<span class="fc" id="L28">    this.objectMapper = objectMapper;</span>
+<span class="fc" id="L29">  }</span>
+
+  public void onAuthenticationSuccessForm(JwtTokenService jwtTokenService,
+      HttpServletRequest request, HttpServletResponse response, Authentication auth)
+      throws IOException {
+<span class="nc" id="L34">    String accessToken = jwtTokenService.generateToken(auth);</span>
+<span class="nc" id="L35">    String refreshToken = jwtTokenService.generateRefreshToken(auth);</span>
+
+<span class="nc" id="L37">    writeJsonResponse(response, accessToken, refreshToken);</span>
+<span class="nc" id="L38">  }</span>
+
+  public void onAuthenticationSuccessOauth(JwtTokenService jwtTokenService,
+      HttpServletRequest request, HttpServletResponse response, Authentication auth)
+      throws IOException {
+<span class="nc bnc" id="L43" title="All 2 branches missed.">    if (auth instanceof OAuth2AuthenticationToken oauthToken) {</span>
+<span class="nc" id="L44">      String email = getEmail(auth, oauthToken);</span>
+<span class="nc" id="L45">      apiUserService.provisionOauth2User(email);</span>
+<span class="nc" id="L46">      String accessToken = jwtTokenService.generateToken(auth);</span>
+<span class="nc" id="L47">      String refreshToken = jwtTokenService.generateRefreshToken(auth);</span>
+
+<span class="nc" id="L49">      writeJsonResponse(response, accessToken, refreshToken);</span>
+    }
+<span class="nc" id="L51">  }</span>
+
+  // Private helper method to handle token response serialization and remove duplication
+  private void writeJsonResponse(HttpServletResponse response, String accessToken,
+      String refreshToken)
+      throws IOException {
+<span class="nc" id="L57">    Map&lt;String, String&gt; tokenResponse = Map.of(</span>
+        &quot;access_token&quot;, accessToken,
+        &quot;refresh_token&quot;, refreshToken
+    );
+
+<span class="nc" id="L62">    response.setContentType(&quot;application/json&quot;);</span>
+<span class="nc" id="L63">    response.setCharacterEncoding(&quot;UTF-8&quot;);</span>
+<span class="nc" id="L64">    objectMapper.writeValue(response.getWriter(), tokenResponse);</span>
+<span class="nc" id="L65">  }</span>
+
+  private static String getEmail(Authentication authentication,
+      OAuth2AuthenticationToken oauthToken) {
+<span class="nc" id="L69">    OAuth2User oauth2User = (OAuth2User) authentication.getPrincipal();</span>
+<span class="nc" id="L70">    String provider = oauthToken.getAuthorizedClientRegistrationId();</span>
+    String email;
+<span class="nc bnc" id="L72" title="All 2 branches missed.">    assert oauth2User != null;</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">    if (&quot;github&quot;.equals(provider)) {</span>
+<span class="nc" id="L74">      email = oauth2User.getAttribute(&quot;login&quot;);</span>
+    } else {
+<span class="nc" id="L76">      email = oauth2User.getAttribute(&quot;email&quot;);</span>
+    }
+<span class="nc" id="L78">    return email;</span>
+  }
+
+  public DefaultOAuth2AuthenticatedPrincipal authenticateRequest(String token) {
+<span class="nc" id="L82">    Jwt jwt = jwtTokenService.decodeToken(token);</span>
+
+<span class="nc" id="L84">    String username = jwt.getSubject();</span>
+<span class="nc" id="L85">    String roles = jwt.getClaimAsString(&quot;scope&quot;);</span>
+
+<span class="nc" id="L87">    return new DefaultOAuth2AuthenticatedPrincipal(</span>
+        username,
+<span class="nc" id="L89">        Map.of(&quot;sub&quot;, username),</span>
+<span class="nc" id="L90">        AuthorityUtils.createAuthorityList(roles.split(&quot; &quot;))</span>
+    );
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

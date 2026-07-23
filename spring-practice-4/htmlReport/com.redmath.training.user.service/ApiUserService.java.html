@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ApiUserService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">jacoco.exec</a> &gt; <a href="index.source.html" class="el_package">com.redmath.training.user.service</a> &gt; <span class="el_source">ApiUserService.java</span></div><h1>ApiUserService.java</h1><pre class="source lang-java linenums">package com.redmath.training.user.service;
+
+import com.redmath.training.user.model.ApiUser;
+import com.redmath.training.user.repository.ApiUserRepository;
+import java.util.Optional;
+import java.util.UUID;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.stereotype.Service;
+
+@Service
+public class ApiUserService implements UserDetailsService {
+
+  private final ApiUserRepository repository;
+
+<span class="fc" id="L19">  ApiUserService(ApiUserRepository repository) {</span>
+<span class="fc" id="L20">    this.repository = repository;</span>
+<span class="fc" id="L21">  }</span>
+
+  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+<span class="nc" id="L24">    Optional&lt;ApiUser&gt; user = repository.findByUserName(username);</span>
+
+<span class="nc bnc" id="L26" title="All 2 branches missed.">    if (user.isEmpty()) {</span>
+<span class="nc" id="L27">      throw new UsernameNotFoundException(&quot;Username doesn't exist&quot;);</span>
+    }
+<span class="nc" id="L29">    UserDetails userDetails = User.withUsername(username).password(user.get().getPassword())</span>
+<span class="nc" id="L30">        .authorities(user.get().getRoles().split(&quot;,&quot;)).build();</span>
+<span class="nc" id="L31">    return userDetails;</span>
+
+  }
+
+  public ApiUser generateToken(String username) {
+<span class="nc" id="L36">    ApiUser user = repository.findByUserName(username)</span>
+<span class="nc" id="L37">        .orElseThrow(</span>
+<span class="nc" id="L38">            () -&gt; new UsernameNotFoundException(&quot;No API user found for username: &quot; + username));</span>
+
+<span class="nc" id="L40">    user.setToken(UUID.randomUUID().toString());</span>
+<span class="nc" id="L41">    return repository.save(user);</span>
+  }
+
+  public ApiUser findByToken(String token) {
+<span class="nc" id="L45">    return repository.findByToken(token)</span>
+<span class="nc" id="L46">        .orElseThrow(() -&gt; new OAuth2AuthenticationException(&quot;Invalid or expired access token&quot;));</span>
+  }
+
+  public ApiUser provisionOauth2User(String username) {
+<span class="nc" id="L50">    return repository.findByUserName(username)</span>
+<span class="nc" id="L51">        .orElseGet(() -&gt; {</span>
+<span class="nc" id="L52">          ApiUser newUser = new ApiUser();</span>
+<span class="nc" id="L53">          newUser.setUserName(username);</span>
+<span class="nc" id="L54">          newUser.setPassword(&quot;{noop}&quot; + UUID.randomUUID());</span>
+<span class="nc" id="L55">          newUser.setRoles(&quot;reporter&quot;);</span>
+<span class="nc" id="L56">          return repository.save(newUser);</span>
+        });
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

@@ -1,7 +1,7 @@
 package com.redmath.training.welcome;
 
 import com.redmath.training.config.AppMessageProperties;
-import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +18,11 @@ public class WelcomeController {
   }
 
   @GetMapping
-  public Map<String, Object> welcome() {
-    return Map.of("message", appMessageProperties.getWelcome(), "at", LocalDateTime.now());
+  public Map<String, String> welcome() {
+    Map<String, String> response = new HashMap<>();
+    response.put("message",
+        appMessageProperties.getWelcome() != null ? appMessageProperties.getWelcome()
+            : "Default Welcome");
+    return response;
   }
 }

@@ -48,6 +48,7 @@ public class NewsController {
     response.put("totalItems", newsPage.getTotalElements());
     response.put("totalPages", newsPage.getTotalPages());
     response.put("isLast", newsPage.isLast());
+    response.put("size", newsPage.getSize());
 
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
@@ -78,7 +79,7 @@ public class NewsController {
   }
 
   @DeleteMapping("/{newsId}")
-  public ResponseEntity<Void> delete(@PathVariable Long newsId) throws Exception {
+  public ResponseEntity<Void> delete(@PathVariable Long newsId) {
     newsService.delete(newsId);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
