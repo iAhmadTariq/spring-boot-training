@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: spring-practice-5
+  ai:
+    openai:
+      base-url: https://generativelanguage.googleapis.com/v1beta/openai/
+      api-key: ${GOOGLE_API_KEY}
+      chat:
+        options:
+          model: gemini-flash-latest
+logging:
+  level:
+    org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor: DEBUG
