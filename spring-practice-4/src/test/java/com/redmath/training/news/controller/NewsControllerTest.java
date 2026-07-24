@@ -1,6 +1,7 @@
 package com.redmath.training.news.controller;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import jakarta.transaction.Transactional;
 import org.hamcrest.Matchers;
@@ -27,7 +28,7 @@ class NewsControllerTest {
   void findAll_withoutPageParams_shouldReturnFirstPageWithDefaults() throws Exception {
     mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/news"))
         .andDo(print())
-        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(status().isOk())
         .andExpect(
             MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(MockMvcResultMatchers.jsonPath("$.content.length()").value(10))
@@ -47,7 +48,7 @@ class NewsControllerTest {
             .param("sortBy", "newsId")
             .param("direction", "asc"))
         .andDo(print())
-        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(status().isOk())
         .andExpect(
             MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(MockMvcResultMatchers.jsonPath("$.content.length()").value(5))
@@ -63,7 +64,7 @@ class NewsControllerTest {
   void findById_shouldReturnNews_whenNewsExists() throws Exception {
     mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/news/1"))
         .andDo(print())
-        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(status().isOk())
         .andExpect(
             MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(MockMvcResultMatchers.jsonPath("$.newsId").value(1))
@@ -75,7 +76,7 @@ class NewsControllerTest {
   void findById_shouldReturnNotFound_whenNewsDoesNotExist() throws Exception {
     mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/news/9999"))
         .andDo(print())
-        .andExpect(MockMvcResultMatchers.status().isNotFound());
+        .andExpect(status().isNotFound());
   }
 
   @Test
@@ -87,7 +88,7 @@ class NewsControllerTest {
                 .authorities(AuthorityUtils.commaSeparatedStringToAuthorityList("reporter")))
             .with(SecurityMockMvcRequestPostProcessors.csrf()))
         .andDo(print())
-        .andExpect(MockMvcResultMatchers.status().isCreated())
+        .andExpect(status().isCreated())
         .andExpect(
             MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("Test Title"))
@@ -102,7 +103,7 @@ class NewsControllerTest {
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"title\": \"Test Title\", \"description\": \"Test description\"}"))
         .andDo(print())
-        .andExpect(MockMvcResultMatchers.status().isForbidden());
+        .andExpect(status().isForbidden());
   }
 
   @Test
@@ -113,7 +114,7 @@ class NewsControllerTest {
             .with(SecurityMockMvcRequestPostProcessors.user("reporter1")
                 .authorities(AuthorityUtils.commaSeparatedStringToAuthorityList("reporter"))))
         .andDo(print())
-        .andExpect(MockMvcResultMatchers.status().isForbidden());
+        .andExpect(status().isForbidden());
   }
 
   @Test
@@ -125,7 +126,7 @@ class NewsControllerTest {
                 .authorities(AuthorityUtils.commaSeparatedStringToAuthorityList("reporter")))
             .with(SecurityMockMvcRequestPostProcessors.csrf()))
         .andDo(print())
-        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(status().isOk())
         .andExpect(
             MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("Updated Title"))
@@ -141,7 +142,7 @@ class NewsControllerTest {
                 .authorities(AuthorityUtils.commaSeparatedStringToAuthorityList("editor")))
             .with(SecurityMockMvcRequestPostProcessors.csrf()))
         .andDo(print())
-        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(status().isOk())
         .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("Updated by Editor"))
         .andExpect(MockMvcResultMatchers.jsonPath("$.description").value("Updated description"));
   }
@@ -155,7 +156,7 @@ class NewsControllerTest {
                 .authorities(AuthorityUtils.commaSeparatedStringToAuthorityList("reporter")))
             .with(SecurityMockMvcRequestPostProcessors.csrf()))
         .andDo(print())
-        .andExpect(MockMvcResultMatchers.status().isForbidden());
+        .andExpect(status().isForbidden());
   }
 
   @Test
@@ -167,7 +168,7 @@ class NewsControllerTest {
                 .authorities(AuthorityUtils.commaSeparatedStringToAuthorityList("reporter")))
             .with(SecurityMockMvcRequestPostProcessors.csrf()))
         .andDo(print())
-        .andExpect(MockMvcResultMatchers.status().isNotFound());
+        .andExpect(status().isNotFound());
   }
 
   @Test
@@ -179,7 +180,7 @@ class NewsControllerTest {
                 .authorities(AuthorityUtils.commaSeparatedStringToAuthorityList("reporter")))
             .with(SecurityMockMvcRequestPostProcessors.csrf()))
         .andDo(print())
-        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(status().isOk())
         .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("New Title Only"))
         .andExpect(MockMvcResultMatchers.jsonPath("$.description")
             .value(
@@ -195,7 +196,7 @@ class NewsControllerTest {
                 .authorities(AuthorityUtils.commaSeparatedStringToAuthorityList("editor")))
             .with(SecurityMockMvcRequestPostProcessors.csrf()))
         .andDo(print())
-        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(status().isOk())
         .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("Editor Patched Title"))
         .andExpect(MockMvcResultMatchers.jsonPath("$.description")
             .value(
@@ -211,7 +212,7 @@ class NewsControllerTest {
                 .authorities(AuthorityUtils.commaSeparatedStringToAuthorityList("reporter")))
             .with(SecurityMockMvcRequestPostProcessors.csrf()))
         .andDo(print())
-        .andExpect(MockMvcResultMatchers.status().isForbidden());
+        .andExpect(status().isForbidden());
   }
 
   @Test
@@ -223,7 +224,7 @@ class NewsControllerTest {
                 .authorities(AuthorityUtils.commaSeparatedStringToAuthorityList("reporter")))
             .with(SecurityMockMvcRequestPostProcessors.csrf()))
         .andDo(print())
-        .andExpect(MockMvcResultMatchers.status().isNotFound());
+        .andExpect(status().isNotFound());
   }
 
   @Test
@@ -233,7 +234,7 @@ class NewsControllerTest {
                 .authorities(AuthorityUtils.commaSeparatedStringToAuthorityList("editor")))
             .with(SecurityMockMvcRequestPostProcessors.csrf()))
         .andDo(print())
-        .andExpect(MockMvcResultMatchers.status().isNoContent());
+        .andExpect(status().isNoContent());
   }
 
   @Test
@@ -243,6 +244,14 @@ class NewsControllerTest {
                 .authorities(AuthorityUtils.commaSeparatedStringToAuthorityList("editor")))
             .with(SecurityMockMvcRequestPostProcessors.csrf()))
         .andDo(print())
-        .andExpect(MockMvcResultMatchers.status().isNotFound());
+        .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void shouldReturnNewsAfterGivenDate() throws Exception {
+    mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/news/after")
+            .param("date", "2026-07-01")
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk());
   }
 }

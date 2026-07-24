@@ -4,6 +4,7 @@ import com.redmath.training.user.model.ApiUser;
 import com.redmath.training.user.repository.ApiUserRepository;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -40,6 +41,7 @@ public class ApiUserService implements UserDetailsService {
     return repository.save(user);
   }
 
+  @Cacheable(cacheNames = "ApiUser")
   public ApiUser findByToken(String token) {
     return repository.findByToken(token)
         .orElseThrow(() -> new OAuth2AuthenticationException("Invalid or expired access token"));

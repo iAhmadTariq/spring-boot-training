@@ -4,9 +4,12 @@ import com.redmath.training.news.model.News;
 import com.redmath.training.news.model.NewsDto;
 import com.redmath.training.news.service.NewsService;
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -54,8 +57,20 @@ public class NewsController {
   }
 
   @GetMapping("/{newsId}")
-  public NewsDto findById(@PathVariable Long newsId) {
-    return NewsDto.from(newsService.findById(newsId));
+  public ResponseEntity<NewsDto> findById(@PathVariable Long newsId) {
+    return ResponseEntity.ok(NewsDto.from(newsService.findById(newsId)));
+  }
+
+  @GetMapping("/after")
+  public ResponseEntity<List<NewsDto>> findNewsAfterThisDate(
+      @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+
+    List<NewsDto> newsDto = newsService.findNewsAfterThisDate(date)
+        .stream()
+        .map(NewsDto::from)
+        .toList();
+
+    return ResponseEntity.ok(newsDto);
   }
 
   @PostMapping

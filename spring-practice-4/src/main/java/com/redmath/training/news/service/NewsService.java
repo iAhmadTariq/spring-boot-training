@@ -3,7 +3,9 @@ package com.redmath.training.news.service;
 import com.redmath.training.news.model.News;
 import com.redmath.training.news.model.NewsDto;
 import com.redmath.training.news.repository.NewsRepository;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -36,6 +38,10 @@ public class NewsService {
   public News findById(Long newsId) {
     return newsRepository.findById(newsId)
         .orElseThrow(() -> new NoSuchElementException("News not found: " + newsId));
+  }
+
+  public List<News> findNewsAfterThisDate(LocalDate date){
+    return newsRepository.findNewsAfterThisDate(date.atStartOfDay());
   }
 
   public NewsDto create(NewsDto newsDto) {

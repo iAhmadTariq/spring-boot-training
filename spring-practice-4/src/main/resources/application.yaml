@@ -44,12 +44,12 @@ management:
       probability: 1.0
     export:
       enabled: true
-  opentelemetry:
-    tracing:
-      export:
-        otlp:
-          endpoint: http://localhost:4317
-          transport: grpc
+#  opentelemetry:
+#    tracing:
+#      export:
+#        otlp:
+#          endpoint: http://localhost:4317
+#          transport: grpc
   otlp:
     metrics:
       export:

@@ -47,7 +47,6 @@ public class ApiSecurityConfiguration {
         .formLogin(form -> form
             .successHandler((request, response, authentication) -> apiSecurityService
                 .onAuthenticationSuccessForm(jwtTokenService, response, authentication)))
-        // NOSONAR: CSRF cookie must be accessible by JavaScript frontend to include in X-XSRF-TOKEN header
         .csrf(config -> config
             .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
             .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
