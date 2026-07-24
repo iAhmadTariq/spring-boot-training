@@ -5,6 +5,7 @@ import com.redmath.training.user.repository.ApiUserRepository;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -56,5 +57,13 @@ public class ApiUserService implements UserDetailsService {
           newUser.setRoles("reporter");
           return repository.save(newUser);
         });
+  }
+
+  @Scheduled(fixedDelay = 10000)
+  public void process(){
+    for(ApiUser user: repository.findAll()){
+      user.setToken(null);
+      repository.save(user);
+    }
   }
 }
