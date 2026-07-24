@@ -4,14 +4,19 @@ import com.redmath.training.news.model.News;
 import com.redmath.training.news.model.NewsDto;
 import com.redmath.training.news.service.NewsService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -25,8 +30,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/news")
+@Validated
 public class NewsController {
 
+  private static final Logger log = LoggerFactory.getLogger(NewsController.class);
   private final NewsService newsService;
 
   public NewsController(NewsService newsService) {
@@ -36,8 +43,8 @@ public class NewsController {
 
   @GetMapping
   public ResponseEntity<Map<String, Object>> findAll(
-      @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "10") int size,
+      @RequestParam(defaultValue = "0") @Min(value = 0, message = "Page index must not be negative") int page,
+      @RequestParam(defaultValue = "10") @Min(value = 1, message = "Page size must be at least 1") @Max(value = 100, message = "Page size must not exceed 100") int size,
       @RequestParam(defaultValue = "reportedAt") String sortBy,
       @RequestParam(defaultValue = "desc") String direction
   ) {
@@ -88,7 +95,7 @@ public class NewsController {
 
   @PatchMapping("/{newsId}")
   public ResponseEntity<NewsDto> partialUpdate(@PathVariable Long newsId,
-      @RequestBody NewsDto newsDto) {
+      @Valid @RequestBody NewsDto newsDto) {
     NewsDto updatedNews = newsService.partialUpdate(newsId, newsDto);
     return new ResponseEntity<>(updatedNews, HttpStatus.OK);
   }

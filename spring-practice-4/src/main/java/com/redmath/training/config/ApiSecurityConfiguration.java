@@ -27,7 +27,6 @@ public class ApiSecurityConfiguration {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http, ApiUserService userService,
       JwtTokenService jwtTokenService,
-      ApiUserService apiUserService,
       ApiSecurityService apiSecurityService) {
     http.authorizeHttpRequests(config -> config
             .requestMatchers("/api/v1/auth/*").permitAll()

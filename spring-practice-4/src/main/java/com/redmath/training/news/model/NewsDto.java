@@ -1,5 +1,7 @@
 package com.redmath.training.news.model;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,10 +11,16 @@ import lombok.Setter;
 public class NewsDto {
 
   private long newsId;
+
+  @NotBlank(message = "Title cannot be empty")
+  @Size(min = 5, max = 100, message = "Title must be between 5 and 100 characters")
   private String title;
+
+  @Size(max = 1000, message = "Description cannot exceed 1000 characters")
   private String description;
+
   private String reportedBy;
-  private LocalDateTime reportedAt = LocalDateTime.now();
+  private LocalDateTime reportedAt;
 
   public static NewsDto from(News news) {
     NewsDto newsDto = new NewsDto();

@@ -7,7 +7,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class NewsService {
 
+  private static final Logger log = LoggerFactory.getLogger(NewsService.class);
+  private static final int DEFAULT_PAGE_SIZE = 10;
+  private static final String DEFAULT_SORT_BY = "reportedAt";
+  private static final String DEFAULT_DIRECTION = "desc";
   private final NewsRepository newsRepository;
 
   public NewsService(NewsRepository newsRepository) {
@@ -28,10 +33,15 @@ public class NewsService {
   }
 
   public Page<News> findAll(int page, int size, String sortBy, String direction) {
-    Sort sort = direction.equalsIgnoreCase(Sort.Direction.ASC.name())
-        ? Sort.by(sortBy).ascending()
-        : Sort.by(sortBy).descending();
-    Pageable pageable = PageRequest.of(page, size, sort);
+    int validatedPage = Math.max(page, 0);
+    int validatedSize = size > 0 ? size : DEFAULT_PAGE_SIZE;
+    String validatedSortBy = sortBy != null && !sortBy.isBlank() ? sortBy : DEFAULT_SORT_BY;
+    String validatedDirection = direction != null && !direction.isBlank() ? direction : DEFAULT_DIRECTION;
+
+    Sort sort = validatedDirection.equalsIgnoreCase(Sort.Direction.ASC.name())
+        ? Sort.by(validatedSortBy).ascending()
+        : Sort.by(validatedSortBy).descending();
+    Pageable pageable = PageRequest.of(validatedPage, validatedSize, sort);
     return newsRepository.findAll(pageable);
   }
 
@@ -89,11 +99,10 @@ public class NewsService {
   }
 
   public void delete(Long newsId) {
-    Optional<News> existingNews = newsRepository.findById(newsId);
-    if (existingNews.isEmpty()) {
-      throw new NoSuchElementException("News not found with ID: " + newsId);
-    }
-    newsRepository.delete(existingNews.get());
+    News existingNews = newsRepository.findById(newsId)
+        .orElseThrow(() -> new NoSuchElementException("News not found with ID: " + newsId));
+    authorizeOwnerOrEditor(existingNews);
+    newsRepository.delete(existingNews);
   }
 
   private void authorizeOwnerOrEditor(News existingNews) {
@@ -105,7 +114,7 @@ public class NewsService {
     boolean isEditor = hasRole(auth, "editor");
 
     if (!isOwner && !isEditor) {
-      throw new AccessDeniedException("You do not have permission to update this news article.");
+      throw new AccessDeniedException("You do not have permission to modify this news article.");
     }
   }
 
