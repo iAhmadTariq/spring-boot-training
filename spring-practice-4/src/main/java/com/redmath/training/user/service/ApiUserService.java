@@ -2,7 +2,6 @@ package com.redmath.training.user.service;
 
 import com.redmath.training.user.model.ApiUser;
 import com.redmath.training.user.repository.ApiUserRepository;
-import java.util.Optional;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

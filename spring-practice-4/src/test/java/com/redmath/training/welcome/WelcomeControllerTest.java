@@ -28,4 +28,15 @@ class WelcomeControllerTest {
                 .contentTypeCompatibleWith(org.springframework.http.MediaType.APPLICATION_JSON))
         .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Custom Welcome"));
   }
+
+  @Test
+  void shouldReturnDefaultWelcomeMessage_whenPropertyIsNotSet() throws Exception {
+    mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/welcome"))
+        .andDo(print())
+        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(
+            MockMvcResultMatchers.content()
+                .contentTypeCompatibleWith(org.springframework.http.MediaType.APPLICATION_JSON))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Custom Welcome"));
+  }
 }

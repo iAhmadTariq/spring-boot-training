@@ -36,7 +36,8 @@ public class NewsService {
     int validatedPage = Math.max(page, 0);
     int validatedSize = size > 0 ? size : DEFAULT_PAGE_SIZE;
     String validatedSortBy = sortBy != null && !sortBy.isBlank() ? sortBy : DEFAULT_SORT_BY;
-    String validatedDirection = direction != null && !direction.isBlank() ? direction : DEFAULT_DIRECTION;
+    String validatedDirection =
+        direction != null && !direction.isBlank() ? direction : DEFAULT_DIRECTION;
 
     Sort sort = validatedDirection.equalsIgnoreCase(Sort.Direction.ASC.name())
         ? Sort.by(validatedSortBy).ascending()
@@ -50,7 +51,7 @@ public class NewsService {
         .orElseThrow(() -> new NoSuchElementException("News not found: " + newsId));
   }
 
-  public List<News> findNewsAfterThisDate(LocalDate date){
+  public List<News> findNewsAfterThisDate(LocalDate date) {
     return newsRepository.findNewsAfterThisDate(date.atStartOfDay());
   }
 

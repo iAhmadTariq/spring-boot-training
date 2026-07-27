@@ -1,6 +1,8 @@
 package com.redmath.training.security.auth;
 
 import com.redmath.training.security.JwtTokenService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthService {
 
+  private static final Logger log = LoggerFactory.getLogger(AuthService.class);
   private final JwtTokenService jwtTokenService;
   private final UserDetailsService userDetailsService;
 
@@ -40,6 +43,7 @@ public class AuthService {
       return jwtTokenService.generateToken(authentication);
 
     } catch (JwtException e) {
+      log.warn("Failed to refresh access token: {}", e.getMessage());
       throw new JwtException("Invalid or expired refresh token", e);
     }
   }

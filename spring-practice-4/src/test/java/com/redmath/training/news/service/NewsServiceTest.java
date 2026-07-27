@@ -264,7 +264,14 @@ class NewsServiceTest {
   void delete_shouldDeleteNews_whenNewsExists() {
     News existingNews = new News();
     existingNews.setNewsId(1L);
+    existingNews.setTitle("Original Title");
+    existingNews.setDescription("Original Description");
+    existingNews.setReportedBy("reporter1");
     when(newsRepository.findById(1L)).thenReturn(Optional.of(existingNews));
+
+    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+        "reporter1", null, java.util.List.of());
+    SecurityContextHolder.getContext().setAuthentication(auth);
 
     newsService.delete(1L);
 
