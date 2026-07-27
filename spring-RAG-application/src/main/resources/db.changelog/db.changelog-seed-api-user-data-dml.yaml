@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: populate-api-user-data
+      author: ahmad.tariq
+      changes:
+        - insert:
+            tableName: api_user
+            columns:
+              - column: { name: user_name, value: 'admin' }
+              - column: { name: password, value: '{noop}admin123' }
+              - column: { name: roles, value: 'admin' }
+        - insert:
+            tableName: api_user
+            columns:
+              - column: { name: user_name, value: 'user' }
+              - column: { name: password, value: '{noop}user123' }
+              - column: { name: roles, value: 'user' }

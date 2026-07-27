@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: db.changelog-api-user-ddl.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: db.changelog-seed-api-user-data-dml.yaml
+      relativeToChangelogFile: true

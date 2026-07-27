@@ -27,4 +27,6 @@ app:
 
 logging:
   level:
+    sql: debug
+    liquibase: debug
     org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor: DEBUG
