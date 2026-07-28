@@ -1,4 +1,4 @@
-package com.training.redmath.chat;
+package com.redmath.training.chat;
 
 import jakarta.validation.constraints.NotBlank;
 

@@ -1,4 +1,4 @@
-package com.training.redmath.ingestion;
+package com.redmath.training.ingestion;
 
 import java.util.List;
 import org.springframework.ai.document.Document;

@@ -1,4 +1,4 @@
-package com.training.redmath.config;
+package com.redmath.training.config;
 
 import jakarta.validation.constraints.Positive;
 import org.springframework.boot.context.properties.ConfigurationProperties;

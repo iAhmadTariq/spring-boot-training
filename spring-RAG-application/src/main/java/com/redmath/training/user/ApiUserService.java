@@ -1,9 +1,8 @@
-package com.training.redmath.user;
+package com.redmath.training.user;
 
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

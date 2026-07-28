@@ -1,4 +1,4 @@
-package com.training.redmath.ingestion;
+package com.redmath.training.ingestion;
 
 
 import org.springframework.core.io.InputStreamResource;

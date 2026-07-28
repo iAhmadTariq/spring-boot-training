@@ -1,4 +1,4 @@
-package com.training.redmath.common;
+package com.redmath.training.common;
 
 import java.io.UncheckedIOException;
 import org.slf4j.Logger;

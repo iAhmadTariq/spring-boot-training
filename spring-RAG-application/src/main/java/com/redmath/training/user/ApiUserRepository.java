@@ -1,4 +1,4 @@
-package com.training.redmath.user;
+package com.redmath.training.user;
 
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,4 +1,4 @@
-package com.training.redmath.user;
+package com.redmath.training.user;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

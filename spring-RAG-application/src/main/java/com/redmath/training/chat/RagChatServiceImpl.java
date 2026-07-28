@@ -1,6 +1,6 @@
-package com.training.redmath.chat;
+package com.redmath.training.chat;
 
-import com.training.redmath.config.RagProperties;
+import com.redmath.training.config.RagProperties;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor;
 import org.springframework.ai.vectorstore.SearchRequest;

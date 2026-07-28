@@ -1,4 +1,4 @@
-package com.training.redmath.config;
+package com.redmath.training.config;
 
 import java.io.File;
 import org.springframework.ai.embedding.EmbeddingModel;

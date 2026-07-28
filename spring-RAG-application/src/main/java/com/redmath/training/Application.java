@@ -1,6 +1,6 @@
-package com.training.redmath;
+package com.redmath.training;
 
-import com.training.redmath.config.RagProperties;
+import com.redmath.training.config.RagProperties;
 import java.util.Locale;
 import java.util.TimeZone;
 import org.springframework.boot.SpringApplication;

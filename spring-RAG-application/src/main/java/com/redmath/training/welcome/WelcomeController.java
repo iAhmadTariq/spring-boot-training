@@ -1,4 +1,4 @@
-package com.training.redmath.welcome;
+package com.redmath.training.welcome;
 
 import java.util.HashMap;
 import java.util.Map;

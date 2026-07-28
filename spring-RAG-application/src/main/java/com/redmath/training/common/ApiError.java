@@ -1,4 +1,4 @@
-package com.training.redmath.common;
+package com.redmath.training.common;
 
 public record ApiError(String message) {
 }
