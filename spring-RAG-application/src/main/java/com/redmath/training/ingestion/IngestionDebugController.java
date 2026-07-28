@@ -17,7 +17,7 @@ public class IngestionDebugController {
     this.vectorStore = vectorStore;
   }
 
-  @GetMapping("/api/ingest/debug-search")
+  @GetMapping("/api/v1/ingest/debug-search")
   public List<String> debugSearch(@RequestParam String query) {
     return vectorStore.similaritySearch(
             SearchRequest.builder().query(query).topK(3).build())

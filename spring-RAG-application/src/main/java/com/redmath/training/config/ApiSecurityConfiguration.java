@@ -24,7 +24,7 @@ public class ApiSecurityConfiguration {
       ApiUserService apiUserService,
       ApiSecurityService apiSecurityService) {
     http.authorizeHttpRequests(config -> config
-            .requestMatchers("/api/v1/*").authenticated()
+            .requestMatchers("/api/v1/**").authenticated()
             .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**")
             .permitAll())
         .formLogin(form -> form

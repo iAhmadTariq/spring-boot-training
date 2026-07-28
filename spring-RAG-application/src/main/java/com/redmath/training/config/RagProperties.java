@@ -12,4 +12,5 @@ public record RagProperties(
     @Positive int topK,
     String vectorStorePersistPath
 ) {
+
 }

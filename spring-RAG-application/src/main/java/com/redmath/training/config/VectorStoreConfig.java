@@ -17,8 +17,8 @@ public class VectorStoreConfig {
   }
 
   /**
-   * In-memory vector store, optionally restored from disk so embeddings
-   * survive application restarts during local development.
+   * In-memory vector store, optionally restored from disk so embeddings survive application
+   * restarts during local development.
    */
   @Bean
   public VectorStore vectorStore(EmbeddingModel embeddingModel) {

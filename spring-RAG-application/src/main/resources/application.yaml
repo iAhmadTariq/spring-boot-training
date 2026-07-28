@@ -2,17 +2,27 @@ spring:
   application:
     name: spring-practice-5
   ai:
-    google:
-      genai:
-        api-key: ${GOOGLE_API_KEY}
-        chat:
-          options:
-            model: gemini-3.5-flash-lite
-        embedding:
-          api-key: ${GOOGLE_API_KEY}
-          text:
-            options:
-              model: gemini-embedding-001
+    ollama:
+      base-url: http://localhost:11434
+      chat:
+        options:
+          model: llama3.2:1b
+      embedding:
+        options:
+          model: nomic-embed-text
+      init:
+        pull-model-strategy: when_missing
+#    google:
+#      genai:
+#        api-key: ${GOOGLE_API_KEY}
+#        chat:
+#          options:
+#            model: gemini-3.5-flash-lite
+#        embedding:
+#          api-key: ${GOOGLE_API_KEY}
+#          text:
+#            options:
+#              model: gemini-embedding-001
   servlet:
     multipart:
       max-file-size: 10MB
