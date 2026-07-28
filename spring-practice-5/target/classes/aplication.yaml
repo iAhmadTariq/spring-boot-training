@@ -1,8 +1,0 @@
-Spring:
-  ai:
-    openai:
-      base-url: https://generativelanguage.googleapis.com/v1beta/models
-      api-key: ${GOOGLE_API_KEY}
-      chat:
-        model: gemini-flash-latest
-

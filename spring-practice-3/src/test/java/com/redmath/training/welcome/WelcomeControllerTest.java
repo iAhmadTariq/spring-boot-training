@@ -20,11 +20,15 @@ public class WelcomeControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    void shouldWelcome() throws Exception{
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/welcome"))
-                .andDo(print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Welcome to News App"));
+    void shouldWelcome() {
+        try {
+            mockMvc.perform(MockMvcRequestBuilders.get("/api/v1/welcome"))
+                    .andDo(print())
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+                    .andExpect(MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.message").value("Welcome to News App"));
+        } catch (Exception e) {
+            throw new AssertionError(e);
+        }
     }
 }

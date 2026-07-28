@@ -19,33 +19,49 @@ public class WelcomeControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    void shouldReturnJsonInfo() throws Exception {
-        mockMvc.perform(get("/info"))
-                .andExpect(status().is2xxSuccessful())
-                .andDo(print())
-                .andExpect(jsonPath("$.status").value("success"))
-                .andExpect(jsonPath("$.framework").value("Spring Boot 4.0.7"))
-                .andExpect(jsonPath("$.runtime").value("Java 25"));
+    void shouldReturnJsonInfo() {
+        try {
+            mockMvc.perform(get("/info"))
+                    .andExpect(status().is2xxSuccessful())
+                    .andDo(print())
+                    .andExpect(jsonPath("$.status").value("success"))
+                    .andExpect(jsonPath("$.framework").value("Spring Boot 4.0.7"))
+                    .andExpect(jsonPath("$.runtime").value("Java 25"));
+        } catch (Exception e) {
+            throw new AssertionError(e);
+        }
     }
 
     @Test
-    void shouldReturnNamedWelcome() throws Exception {
-        mockMvc.perform(get("/welcome/Ahmad"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Welcome Ahmad to Spring Boot"));
+    void shouldReturnNamedWelcome() {
+        try {
+            mockMvc.perform(get("/welcome/Ahmad"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().string("Welcome Ahmad to Spring Boot"));
+        } catch (Exception e) {
+            throw new AssertionError(e);
+        }
     }
 
     @Test
-    void shouldReturnNamedWelcomeByQueryParam() throws Exception {
-        mockMvc.perform(get("/welcome?name=Ahmad"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Welcome Ahmad to Spring Boot"));
+    void shouldReturnNamedWelcomeByQueryParam() {
+        try {
+            mockMvc.perform(get("/welcome?name=Ahmad"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().string("Welcome Ahmad to Spring Boot"));
+        } catch (Exception e) {
+            throw new AssertionError(e);
+        }
     }
 
     @Test
-    void applicationHealthShouldBeUp() throws Exception {
-        mockMvc.perform(get("/actuator/health"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("UP"));
+    void applicationHealthShouldBeUp() {
+        try {
+            mockMvc.perform(get("/actuator/health"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.status").value("UP"));
+        } catch (Exception e) {
+            throw new AssertionError(e);
+        }
     }
 }

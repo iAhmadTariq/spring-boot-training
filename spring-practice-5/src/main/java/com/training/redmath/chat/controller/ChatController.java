@@ -1,6 +1,6 @@
 package com.training.redmath.chat.controller;
 
-import org.springframework.ai.chat.client.ChatClient;
+import com.training.redmath.chat.service.ChatService;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -8,18 +8,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class ChatController {
-  private final ChatClient chatClient;
 
-  public ChatController(ChatClient chatClient){
-    this.chatClient = chatClient;
+  final private ChatService chatService;
+
+  public ChatController(ChatService chatService, ChatMemory chatMemory) {
+    this.chatService = chatService;
   }
 
   @GetMapping("/api/v1/chat")
   public String chat(@RequestParam(name = "message", defaultValue = "Hi") String message) {
-    // return chatModel.call(message);
-    return chatClient.prompt(message)
-        .advisors(context -> context.param(ChatMemory.CONVERSATION_ID, "default"))
-        .call().content();
+    return chatService.chat(message);
   }
 
 }

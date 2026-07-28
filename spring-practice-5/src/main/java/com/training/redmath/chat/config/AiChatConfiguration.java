@@ -1,5 +1,6 @@
 package com.training.redmath.chat.config;
 
+import com.training.redmath.chat.tools.DateTimeTools;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
@@ -13,9 +14,9 @@ import org.springframework.context.annotation.Configuration;
 public class AiChatConfiguration {
 
   @Bean
-  ChatClient chatClient(ChatClient.Builder builder) {
+  ChatClient chatClient(ChatClient.Builder builder, DateTimeTools dateTimeTools) {
     ChatMemory chatMemory = MessageWindowChatMemory.builder().build();
     Advisor chatMemoryAdvisor = MessageChatMemoryAdvisor.builder(chatMemory).build();
-    return builder.defaultAdvisors(chatMemoryAdvisor, new SimpleLoggerAdvisor()).build();
+    return builder.defaultAdvisors(chatMemoryAdvisor, new SimpleLoggerAdvisor()).defaultTools(dateTimeTools).build();
   }
 }
