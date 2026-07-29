@@ -1,4 +1,4 @@
-package com.redmath.training.ingestion;
+package com.redmath.training.ingestion.document;
 
 import java.util.List;
 import org.slf4j.Logger;

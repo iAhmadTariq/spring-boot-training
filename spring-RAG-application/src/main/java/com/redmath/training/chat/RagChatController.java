@@ -19,7 +19,7 @@ public class RagChatController {
 
   @PostMapping
   public ResponseEntity<ChatResponse> chat(@Valid @RequestBody ChatRequest request) {
-    String answer = ragChatService.answer(request.question());
+    String answer = ragChatService.answer(request.question(), request.conversationId());
     return ResponseEntity.ok(new ChatResponse(answer));
   }
 }

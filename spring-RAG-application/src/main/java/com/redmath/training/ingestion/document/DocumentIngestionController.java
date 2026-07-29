@@ -1,4 +1,4 @@
-package com.redmath.training.ingestion;
+package com.redmath.training.ingestion.document;
 
 
 import java.io.IOException;
@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/v1/ingest")
-public class IngestionController {
+@RequestMapping("/api/v1/ingest/document")
+public class DocumentIngestionController {
 
   private final DocumentIngestionService ingestionService;
 
-  public IngestionController(DocumentIngestionService ingestionService) {
+  public DocumentIngestionController(DocumentIngestionService ingestionService) {
     this.ingestionService = ingestionService;
   }
 

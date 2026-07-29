@@ -1,4 +1,4 @@
-package com.redmath.training.ingestion;
+package com.redmath.training.ingestion.document;
 
 import java.util.List;
 import org.springframework.ai.document.Document;
@@ -20,9 +20,13 @@ public class IngestionDebugController {
   @GetMapping("/api/v1/ingest/debug-search")
   public List<String> debugSearch(@RequestParam String query) {
     return vectorStore.similaritySearch(
-            SearchRequest.builder().query(query).topK(3).build())
+            SearchRequest.builder().query(query).topK(5).build())
         .stream()
-        .map(Document::getText)
+        .map(doc -> "score=%.3f | %s".formatted(
+            doc.getMetadata().get("distance") != null
+                ? doc.getMetadata().get("distance")
+                : -1.0,
+            doc.getText()))
         .toList();
   }
 }
