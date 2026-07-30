@@ -15,23 +15,23 @@ import org.springframework.stereotype.Service;
 public class RagChatServiceImpl implements RagChatService {
 
   private static final String CUSTOM_QA_TEMPLATE = """
-            You must answer ONLY using the information in the CONTEXT below.
-            Use the conversation history only to understand follow-up questions
-            (e.g. pronouns like "it" or "that phone"), not as a source of facts.
-            
-            Rules:
-            - If the answer is not explicitly present in the CONTEXT, respond exactly: "I don't have information about that in the provided document."
-            - Do NOT use any outside knowledge, even if you know the answer.
-            - Do NOT guess or infer beyond what the CONTEXT states.
-            
-            CONTEXT:
-            {question_answer_context}
-            
-            QUESTION:
-            {query}
-            
-            ANSWER (from CONTEXT only):
-            """;
+      You must answer ONLY using the information in the CONTEXT below.
+      Use the conversation history only to understand follow-up questions
+      (e.g. pronouns like "it" or "that phone"), not as a source of facts.
+      
+      Rules:
+      - If the answer is not explicitly present in the CONTEXT, respond exactly: "I don't have information about that in the provided document."
+      - Do NOT use any outside knowledge, even if you know the answer.
+      - Do NOT guess or infer beyond what the CONTEXT states.
+      
+      CONTEXT:
+      {question_answer_context}
+      
+      QUESTION:
+      {query}
+      
+      ANSWER (from CONTEXT only):
+      """;
 
   private final ChatClient chatClient;
   private final QuestionAnswerAdvisor questionAnswerAdvisor;

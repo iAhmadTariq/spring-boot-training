@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -42,7 +43,8 @@ public class ApiUserService implements UserDetailsService {
   @Cacheable(cacheNames = "ApiUser")
   public ApiUser findByToken(String token) {
     return repository.findByToken(token)
-        .orElseThrow(() -> new OAuth2AuthenticationException("Invalid or expired access token"));
+        .orElseThrow(() -> new OAuth2AuthenticationException(
+            new OAuth2Error("invalid_token", "Invalid or expired access token", null)));
   }
 
 }

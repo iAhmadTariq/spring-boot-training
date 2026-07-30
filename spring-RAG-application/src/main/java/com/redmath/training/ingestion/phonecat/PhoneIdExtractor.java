@@ -1,6 +1,5 @@
 package com.redmath.training.ingestion.phonecat;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.core.io.Resource;
@@ -23,7 +22,7 @@ public class PhoneIdExtractor {
       List<String> ids = new ArrayList<>();
       root.forEach(node -> ids.add(node.path("id").asString()));
       return ids;
-    } catch (IOException e) {
+    } catch (Exception e) {
       throw new PhoneCatalogIngestionException("Failed to read phone ids from phones.json", e);
     }
   }
