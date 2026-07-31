@@ -40,7 +40,7 @@ public class NewsService {
         .orElseThrow(() -> new NoSuchElementException("News not found: " + newsId));
   }
 
-  public List<News> findNewsAfterThisDate(LocalDate date){
+  public List<News> findNewsAfterThisDate(LocalDate date) {
     return newsRepository.findNewsAfterThisDate(date.atStartOfDay());
   }
 

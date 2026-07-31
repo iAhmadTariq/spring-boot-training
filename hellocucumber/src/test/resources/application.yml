@@ -1,0 +1,12 @@
+webdriver:
+  wait:
+    sleepInMillis: 500
+    timeOutInSeconds: 60
+
+search:
+  page:
+    url: https://www.google.com
+    txt-search:
+      xpath: //*[@id="APjFqb"]
+    btn-search:
+      xpath: /html/body/div[1]/div[6]/form/div[1]/div/div[4]/center/input[1]

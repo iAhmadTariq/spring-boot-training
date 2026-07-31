@@ -60,8 +60,8 @@ public class ApiUserService implements UserDetailsService {
   }
 
   @Scheduled(fixedDelay = 10000)
-  public void process(){
-    for(ApiUser user: repository.findAll()){
+  public void process() {
+    for (ApiUser user : repository.findAll()) {
       user.setToken(null);
       repository.save(user);
     }

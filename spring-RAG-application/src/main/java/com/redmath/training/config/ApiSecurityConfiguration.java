@@ -23,6 +23,13 @@ public class ApiSecurityConfiguration {
       JwtTokenService jwtTokenService,
       ApiUserService apiUserService,
       ApiSecurityService apiSecurityService) {
+
+    CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
+    csrfTokenRepository.setCookieCustomizer(cookie -> {
+      cookie.sameSite("Lax");
+      cookie.secure(true);
+    });
+
     http.authorizeHttpRequests(config -> config
             .requestMatchers("/api/v1/**").authenticated()
             .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**")
@@ -31,7 +38,7 @@ public class ApiSecurityConfiguration {
             .successHandler((request, response, authentication) -> apiSecurityService
                 .onAuthenticationSuccessForm(jwtTokenService, response, authentication)))
         .csrf(config -> config
-            .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+            .csrfTokenRepository(csrfTokenRepository)
             .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
         .sessionManagement(config -> config
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

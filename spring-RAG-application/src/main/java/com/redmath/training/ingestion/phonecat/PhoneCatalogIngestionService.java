@@ -39,7 +39,7 @@ public class PhoneCatalogIngestionService {
       documents.addAll(readJson(detailResource, phoneId + ".json"));
     }
 
-    vectorStore.add(documents);
+//    vectorStore.add(documents);
     log.info("Ingested {} documents from the phone catalog", documents.size());
 
     return documents.size();
